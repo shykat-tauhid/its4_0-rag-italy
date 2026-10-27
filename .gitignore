@@ -1,0 +1,32 @@
+# Segreti: il .env contiene le chiavi API e non va mai pubblicato.
+# .env.example invece va versionato come modello.
+.env
+.env.*
+!.env.example
+
+# Ambiente virtuale (lo ricrea `uv sync`)
+.venv/
+
+# File temporanei di Python e dei test
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Indice Chroma: si rigenera da data/anagrafe.py al primo avvio
+src/chromadb/
+
+# Artefatti di build (`uv build`)
+dist/
+build/
+*.egg-info/
+
+# Frontend di test (Angular)
+node_modules/
+.angular/
+
+# Output di prova locali
+output.txt
+
+# Impostazioni locali di editor e Claude Code
+.idea/
+.claude/settings.local.json

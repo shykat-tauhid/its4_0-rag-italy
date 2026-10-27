@@ -1,0 +1,31 @@
+[project]
+name = "rag"
+version = "0.1.0"
+description = "rag with gemini"
+readme = "README.md"
+authors = [
+    { name = "shykat", email = "shykatibna@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "google-genai",
+    "python-dotenv",
+    "chromadb",
+    "sentence-transformers>=6.1.0",
+    "openai>=3.19.2",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "numpy",
+]
+
+[project.scripts]
+rag = "rag:main"
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
