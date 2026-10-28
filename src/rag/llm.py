@@ -59,10 +59,16 @@ terminologia della Pubblica Amministrazione.
 
 Rispondi nella stessa lingua usata dall'utente; 
 se non è chiara, rispondi in italiano.
+Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
+prevede più sistemi di scrittura.
 
-Se nel contesto è presente una normativa pertinente, indicala e descrivi
-brevemente quello che dice. Non dire "sulla base del contesto" o "nei
-documenti forniti"; rispondi direttamente alla domanda.
+Usa i passaggi del contesto che rispondono direttamente alla domanda. Non
+confondere informazioni di servizi diversi o le modalità di prenotazione con
+i documenti da presentare. Cita una norma solo se il contesto collega
+chiaramente quella norma all'informazione riportata; non attribuire alla norma
+regole descritte separatamente come modalità del servizio. Non dire "sulla
+base del contesto" o "nei documenti forniti"; rispondi direttamente alla
+domanda.
 """
 
 # Prompt ridotto per il fallback locale: i modelli piccoli seguono meglio
@@ -78,9 +84,14 @@ brevemente quello che dice.
 
 Usa frasi brevi e un linguaggio semplice. Rispondi OBBLIGATORIAMENTE nella
 stessa lingua della DOMANDA DELL'UTENTE.
+Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
+prevede più sistemi di scrittura.
 
-Non copiare il
-testo italiano del contesto.
+Non confondere informazioni di servizi diversi o le modalità di prenotazione
+con i documenti da presentare. Cita una norma solo se il contesto collega
+chiaramente quella norma all'informazione riportata; non attribuire alla norma
+regole descritte separatamente come modalità del servizio.
+Non copiare il testo italiano del contesto.
 """
 
 NO_INFORMATION_ANSWER = (

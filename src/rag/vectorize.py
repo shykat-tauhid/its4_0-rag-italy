@@ -896,13 +896,10 @@ def _query_tokens(query: str, italian: str | None = None):
 
 
 def _rerank_query(query: str, italian: str | None = None) -> str | None:
-    """Testo italiano per il rerank: traduzione, o domanda più glossario."""
+    """Testo italiano per il rerank: traduzione o termini del glossario."""
     if italian:
         return italian
-    glossary = _glossary_query(query)
-    if not glossary:
-        return None
-    return f"{query} {glossary}"
+    return _glossary_query(query)
 
 
 class _BM25Index:
@@ -1096,21 +1093,19 @@ def _rerank(question: str, records, limit: int, italian: str | None = None):
             reverse=True,
         )
 
-    ranked = score(question)
+    rerank_query = italian or question
+    ranked = score(rerank_query)
     if ranked is None:
         return records[:limit]
 
     if MIN_RERANK_SCORE is not None and not any(
         float(item[0]) >= MIN_RERANK_SCORE for item in ranked
     ):
-        # Nessun documento pertinente per la domanda così com'è scritta:
-        # succede con domande in inglese, dove il reranker confronta parole
-        # inglesi con documenti italiani. Riprova con la domanda tradotta in
-        # italiano (LibreTranslate, o glossario se il servizio non risponde),
-        # invece di rispondere "non lo so".
-        translated = _rerank_query(question, italian)
-        if translated:
-            retried = score(translated)
+        # Se la traduzione non è disponibile, prova i termini italiani del
+        # glossario prima di concludere che nessun documento è pertinente.
+        alternate_query = _rerank_query(question) if not italian else None
+        if alternate_query and alternate_query != rerank_query:
+            retried = score(alternate_query)
             if retried is not None:
                 ranked = retried
 

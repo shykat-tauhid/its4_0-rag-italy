@@ -240,6 +240,15 @@ def test_messages_without_history_are_system_plus_user():
     assert [message["role"] for message in messages] == ["system", "user"]
 
 
+def test_system_prompts_prevent_conflating_service_rules_and_regulations():
+    assert "Cita una norma solo se il contesto collega" in llm.SYSTEM_PROMPT
+    assert "modalità di prenotazione" in llm.SYSTEM_PROMPT
+    assert "sistema di scrittura usato dall'utente" in llm.SYSTEM_PROMPT
+    assert "Cita una norma solo se il contesto collega" in llm.LOCAL_SYSTEM_PROMPT
+    assert "modalità di prenotazione" in llm.LOCAL_SYSTEM_PROMPT
+    assert "sistema di scrittura usato dall'utente" in llm.LOCAL_SYSTEM_PROMPT
+
+
 def test_retryable_predicate():
     assert llm._is_retryable(FakeStatusError(503))
     assert llm._is_retryable(APIConnectionError(request=None))
