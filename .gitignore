@@ -30,3 +30,6 @@ output.txt
 # Impostazioni locali di editor e Claude Code
 .idea/
 .claude/settings.local.json
+
+# PDF delle conversazioni generati dal REPL
+conversazioni/

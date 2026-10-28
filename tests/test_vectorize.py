@@ -81,6 +81,26 @@ def test_rerank_uses_italian_translation_for_italian_documents(
     assert [record["id"] for record in ranked] == ["residence-certificate"]
 
 
+def test_multilingual_glossary_matches_each_script(vectorize):
+    terms = vectorize._glossary_terms
+
+    assert {"cambio", "residenza"} <= set(terms("palitan ang aking tirahan"))
+    assert "documenti" in terms("Які потрібні документи?")
+    assert "residenza" in terms("বসবাসের সনদ চাওয়া যায়")
+    assert "residenza" in terms("كيف أحصل على شهادة الإقامة؟")
+    assert {"carta", "identità"} <= set(terms("如何在罗马申请电子身份证？"))
+    assert terms("Come posso cambiare residenza?") == []
+
+
+def test_with_glossary_adds_only_missing_terms(vectorize):
+    enriched = vectorize._with_glossary(
+        "Quali documenti per sostituire la residenza?",
+        ["documenti", "cambio", "residenza"],
+    )
+
+    assert enriched == "Quali documenti per sostituire la residenza? cambio"
+
+
 def test_cie_documentation_is_chunked_by_application_type(vectorize):
     from data.anagrafe import docs
 

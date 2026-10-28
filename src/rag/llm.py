@@ -9,6 +9,9 @@ import os
 import random
 import sys
 import time
+import urllib.error
+import urllib.request
+from types import SimpleNamespace
 
 from dotenv import load_dotenv
 from openai import APIConnectionError, APITimeoutError, OpenAI, OpenAIError
@@ -28,6 +31,11 @@ LOCAL_MODEL_URL = os.getenv("LOCAL_MODEL_URL", "").strip()
 LOCAL_MODEL_TIMEOUT_SECONDS = float(os.getenv("LOCAL_MODEL_TIMEOUT", "300"))
 LOCAL_MODEL_ATTEMPTS = max(1, int(os.getenv("LOCAL_MODEL_ATTEMPTS", "1")))
 LOCAL_MODEL_MAX_TOKENS = int(os.getenv("LOCAL_MODEL_MAX_TOKENS", "0")) or None
+# Finestra di contesto (token) per Ollama. Se > 0 il modello locale è chiamato
+# tramite l'API nativa di Ollama, l'unica che accetta `num_ctx`: l'endpoint
+# OpenAI-compatibile la ignora e usa 4096 token, che prompt e ragionamento
+# esauriscono prima che il modello scriva la risposta. 0 = endpoint /v1.
+LOCAL_MODEL_CONTEXT = max(0, int(os.getenv("LOCAL_MODEL_CONTEXT", "0")))
 # Con il contesto completo il modello locale va in timeout: usa meno documenti
 # e nessun metadato JSON.
 LOCAL_CONTEXT_DOCUMENTS = max(1, int(os.getenv("LOCAL_CONTEXT_DOCUMENTS", "3")))
@@ -79,8 +87,9 @@ Sei l'assistente di un totem per i servizi anagrafici di Roma Capitale.
 Rispondi solo con le informazioni presenti nel CONTESTO. Se non bastano,
 dillo. Non inventare procedure, documenti, scadenze, costi o normative.
 
-Se nel contesto è presente una normativa pertinente, indicala e descrivi
-brevemente quello che dice.
+Indica una normativa solo se riguarda direttamente quello che l'utente ha
+chiesto, e descrivi brevemente cosa stabilisce. Non aggiungere una sezione
+sulla normativa se nessuna norma del contesto risponde alla domanda.
 
 Usa frasi brevi e un linguaggio semplice. Rispondi OBBLIGATORIAMENTE nella
 stessa lingua della DOMANDA DELL'UTENTE.
@@ -104,7 +113,60 @@ class ModelUnavailableError(RuntimeError):
     """Il servizio AI non ha prodotto una risposta dopo i tentativi previsti."""
 
 
-def _local_client(url: str) -> OpenAI:
+class OllamaChatClient:
+    """Client minimo per l'API nativa di Ollama (`/api/chat`).
+
+    Espone la stessa interfaccia `chat.completions.create` del client OpenAI
+    usata da `_ask_with_client`, ma permette di impostare `num_ctx`.
+    """
+
+    def __init__(self, url: str, context_length: int, timeout: float):
+        base = url.rstrip("/")
+        if base.endswith("/v1"):
+            base = base[: -len("/v1")]
+        self.base_url = base
+        self.context_length = context_length
+        self.timeout = timeout
+        self.chat = SimpleNamespace(
+            completions=SimpleNamespace(create=self._create)
+        )
+
+    def _create(self, model, messages, max_tokens=None):
+        options = {"num_ctx": self.context_length}
+        if max_tokens:
+            options["num_predict"] = max_tokens
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": options,
+        }
+        request = urllib.request.Request(
+            f"{self.base_url}/api/chat",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except (urllib.error.URLError, OSError, ValueError) as exc:
+            raise ModelUnavailableError(
+                f"Ollama non raggiungibile ({self.base_url}): {exc}"
+            ) from exc
+
+        message = SimpleNamespace(content=(data.get("message") or {}).get("content"))
+        choice = SimpleNamespace(
+            message=message,
+            finish_reason=data.get("done_reason"),
+        )
+        return SimpleNamespace(choices=[choice])
+
+
+def _local_client(url: str):
+    if LOCAL_MODEL_CONTEXT:
+        return OllamaChatClient(
+            url, LOCAL_MODEL_CONTEXT, LOCAL_MODEL_TIMEOUT_SECONDS
+        )
     return OpenAI(
         api_key=os.getenv("LOCAL_MODEL_API_KEY", "local"),
         base_url=url,
@@ -252,9 +314,19 @@ def _ask_with_client(
                 raise
             last_error = exc
         else:
-            answer = response.choices[0].message.content
+            choice = response.choices[0]
+            answer = choice.message.content
             if answer and answer.strip():
                 return answer
+            if getattr(choice, "finish_reason", None) == "length":
+                # Tipico dei modelli locali che ragionano: il contesto si
+                # esaurisce prima che scrivano la risposta.
+                print(
+                    f"[rag] {model}: risposta vuota, limite di contesto o di "
+                    "token raggiunto (aumenta LOCAL_MODEL_CONTEXT o riduci "
+                    "LOCAL_CONTEXT_DOCUMENTS).",
+                    file=sys.stderr,
+                )
             last_error = ModelUnavailableError(
                 "Il servizio AI non ha restituito una risposta."
             )
