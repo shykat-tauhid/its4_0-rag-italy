@@ -42,7 +42,15 @@ LOCAL_MODEL_API_KEY=local        # solo se il server la richiede
 LOCAL_MODEL_TIMEOUT=300          # secondi
 LOCAL_MODEL_MAX_TOKENS=0         # 0 = nessun limite (consigliato con Ollama)
 LOCAL_CONTEXT_DOCUMENTS=3
+LOCAL_MODEL_CONTEXT=16384        # contesto Ollama; usa l'API nativa /api/chat
 ```
+
+`LOCAL_MODEL_CONTEXT` serve con Ollama: l'endpoint OpenAI-compatibile `/v1`
+ignora la dimensione del contesto e si ferma a 4096 token, che prompt e
+ragionamento interno di modelli come gemma esauriscono prima della risposta
+(risposta vuota). Con un valore maggiore di 0 il backend chiama l'API nativa
+`/api/chat` con `num_ctx`. Lascia `0` per server OpenAI-compatibili diversi da
+Ollama.
 
 Con `LOCAL_MODEL_PRIMARY=1` il modello locale risponde per primo e Gemini
 interviene solo se il locale fallisce. Senza quella variabile (o con `0`) vale

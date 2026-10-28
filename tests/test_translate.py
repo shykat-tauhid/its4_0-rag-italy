@@ -168,3 +168,54 @@ def test_pair_unavailable_does_not_open_circuit(monkeypatch):
     # Il circuito non si è aperto: una nuova lingua passa dal pivot.
     monkeypatch.setattr(translate, "_detect_language", lambda text: "uk")
     assert translate.translate_to_italian("нова") == "tradotto"
+
+
+def test_localize_translates_fixed_message_into_question_language(monkeypatch):
+    calls = []
+
+    def fake_translation(text, target="it", source="auto"):
+        calls.append((text, source, target))
+        if target == "it":
+            return "Come pago la tassa sui rifiuti?"
+        if (source, target) == ("it", "tl"):
+            raise translate._PairUnavailable("it->tl")
+        if (source, target) == ("it", "en"):
+            return "No information."
+        return "Walang impormasyon."
+
+    monkeypatch.setattr(translate, "_request_translation", fake_translation)
+    monkeypatch.setattr(translate, "_detect_language", lambda text: "tl")
+
+    question = "Paano ako magbabayad ng buwis sa basura?"
+    assert translate.localize("Nessuna informazione.", question) == "Walang impormasyon."
+    assert ("No information.", "en", "tl") in calls
+
+    # Seconda chiamata servita dalla cache.
+    count = len(calls)
+    assert translate.localize("Nessuna informazione.", question) == "Walang impormasyon."
+    assert len(calls) == count
+
+
+def test_localize_keeps_italian_questions_unchanged(monkeypatch):
+    monkeypatch.setattr(
+        translate, "_request_translation", lambda text, target="it", source="auto": text
+    )
+    monkeypatch.setattr(
+        translate, "_detect_language", lambda text: pytest.fail("non serve rilevare")
+    )
+
+    assert translate.localize("Nessuna informazione.", "Come pago la TARI?") == (
+        "Nessuna informazione."
+    )
+
+
+def test_localize_returns_original_when_service_fails(monkeypatch):
+    def fake_translation(text, target="it", source="auto"):
+        if target == "it" and source == "auto":
+            return "domanda tradotta"
+        raise urllib.error.URLError("giù")
+
+    monkeypatch.setattr(translate, "_request_translation", fake_translation)
+    monkeypatch.setattr(translate, "_detect_language", lambda text: "ar")
+
+    assert translate.localize("Nessuna informazione.", "سؤال") == "Nessuna informazione."

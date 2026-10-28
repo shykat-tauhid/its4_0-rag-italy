@@ -1,3 +1,4 @@
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -219,6 +220,37 @@ def test_local_primary_without_gemini_has_no_fallback(monkeypatch):
     assert "11434" in str(llm.create_client().base_url)
     assert llm.create_fallback_client() is None
     assert llm.fallback_model_name() is None
+
+
+def test_local_client_uses_native_ollama_api_with_context(monkeypatch):
+    captured = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return b'{"message": {"content": "risposta"}, "done_reason": "stop"}'
+
+    def fake_urlopen(request, timeout):
+        captured["url"] = request.full_url
+        captured["payload"] = json.loads(request.data)
+        return FakeResponse()
+
+    monkeypatch.setattr(llm, "LOCAL_MODEL_CONTEXT", 16384)
+    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+
+    client = llm._local_client("http://localhost:11434/v1")
+    response = client.chat.completions.create(
+        model="modello-locale", messages=[], max_tokens=50
+    )
+
+    assert captured["url"] == "http://localhost:11434/api/chat"
+    assert captured["payload"]["options"] == {"num_ctx": 16384, "num_predict": 50}
+    assert response.choices[0].message.content == "risposta"
 
 
 def test_messages_include_system_context_and_history():

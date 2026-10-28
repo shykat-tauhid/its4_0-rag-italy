@@ -180,6 +180,64 @@ def translate_to_italian(text: str) -> str | None:
     return translated
 
 
+def _translate_from_italian(text: str, target: str) -> str | None:
+    try:
+        return _request_translation(text, target=target, source=TARGET_LANGUAGE)
+    except _PairUnavailable:
+        if target == PIVOT_LANGUAGE:
+            raise
+
+    english = _normalize(
+        _request_translation(text, target=PIVOT_LANGUAGE, source=TARGET_LANGUAGE)
+        or ""
+    )
+    if not english:
+        raise _PairUnavailable("pivot verso l'inglese non riuscito")
+    return _request_translation(english, target=target, source=PIVOT_LANGUAGE)
+
+
+def localize(text: str, question: str) -> str:
+    """Traduce `text`, scritto in italiano, nella lingua di `question`.
+
+    Serve per i messaggi fissi (per esempio "nessuna informazione") che non
+    passano dal modello. Restituisce `text` invariato se la domanda è in
+    italiano o se il servizio non è configurato/raggiungibile.
+    """
+    if not LIBRETRANSLATE_URL or time.monotonic() < _disabled_until:
+        return text
+    # Domanda già italiana: translate_to_italian non ha nulla da tradurre (e
+    # il risultato è in cache). Evita di affidarsi al rilevamento della
+    # lingua, poco affidabile sulle domande brevi.
+    if translate_to_italian(question) is None:
+        return text
+
+    key = f"localize\x00{_normalize(question)}\x00{text}"
+    with _lock:
+        if key in _cache:
+            return _cache[key] or text
+
+    try:
+        target = _detect_language(_normalize(question))
+        if target in (None, TARGET_LANGUAGE):
+            translated = None
+        else:
+            translated = _translate_from_italian(text, target)
+    except _PairUnavailable:
+        translated = None
+    except (urllib.error.URLError, OSError, ValueError) as exc:
+        _record_failure(exc)
+        return text
+    else:
+        _record_success()
+
+    translated = _normalize(translated or "") or None
+    with _lock:
+        if len(_cache) >= MAX_CACHE_ENTRIES:
+            _cache.clear()
+        _cache[key] = translated
+    return translated or text
+
+
 def reset_cache() -> None:
     global _failures, _disabled_until, _failure_reported, _suspension_reported
     with _lock:

@@ -4,6 +4,7 @@ import math
 import os
 import re
 import sys
+import unicodedata
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -732,6 +733,8 @@ _EN_IT_GLOSSARY = {
     "change": ("cambio", "cambiare"),
     "child": ("minore", "bambino"),
     "children": ("minori", "bambini"),
+    "citizen": ("cittadini",),
+    "citizens": ("cittadini",),
     "civil": ("civile",),
     "code": ("codice",),
     "cost": ("costo", "costi"),
@@ -740,6 +743,9 @@ _EN_IT_GLOSSARY = {
     "declaration": ("dichiarazione",),
     "document": ("documento", "documenti"),
     "documents": ("documenti", "documentazione"),
+    "donate": ("donazione",),
+    "donation": ("donazione",),
+    "donor": ("donazione", "organi"),
     "electronic": ("elettronica", "elettronico"),
     "expired": ("scaduta", "scaduto", "scadenza"),
     "expiring": ("scadenza",),
@@ -748,8 +754,13 @@ _EN_IT_GLOSSARY = {
     "family": ("famiglia", "nucleo"),
     "fee": ("costo", "tariffa", "diritto"),
     "fees": ("costi", "tariffa", "diritto"),
-    "foreign": ("straniero", "estero"),
+    "foreign": ("stranieri", "estero"),
+    "foreigner": ("stranieri",),
+    "foreigners": ("stranieri",),
+    "form": ("modulo", "modulistica"),
+    "forms": ("modulistica", "modulo"),
     "health": ("sanitaria",),
+    "id": ("carta", "identità"),
     "identity": ("identità",),
     "law": ("legge", "normativa"),
     "laws": ("leggi", "normativa"),
@@ -761,10 +772,14 @@ _EN_IT_GLOSSARY = {
     "minors": ("minori", "minore"),
     "move": ("trasferimento", "trasferire"),
     "moving": ("trasferimento",),
+    "office": ("sportello", "ufficio"),
+    "organ": ("organi", "donazione"),
+    "organs": ("organi", "donazione"),
     "overseas": ("estero",),
     "paperwork": ("documenti", "documentazione"),
     "pay": ("pagamento", "pagare"),
     "payment": ("pagamento",),
+    "personal": ("anagrafici",),
     "photo": ("fototessera", "foto"),
     "price": ("costo", "tariffa"),
     "register": ("anagrafe", "iscrizione"),
@@ -785,78 +800,322 @@ _EN_IT_GLOSSARY = {
     "status": ("stato",),
     "stolen": ("furto",),
     "tax": ("fiscale",),
+    "update": ("aggiornamento", "variazione"),
+    "updating": ("aggiornamento", "variazione"),
 }
+# Glossario per le lingue diverse dall'inglese. Il confronto dipende dalla
+# scrittura della chiave (vedi `_multilingual_terms`):
+# - caratteri latini (tagalog): il token deve coincidere con la chiave;
+# - cirillico, bengalese, arabo: la chiave è una radice confrontata come
+#   prefisso, perché queste lingue flettono le parole;
+# - cinese: la chiave è cercata come sottostringa, perché il cinese non separa
+#   le parole con spazi e il tokenizer restituisce l'intera frase.
 _IT_MULTILINGUAL_GLOSSARY = {
-    # Ukrainian (Cyrillic)
-    "квартира": ("appartamento",),
-    "дом": ("casa", "abitazione"),
-    "мэр": ("sindaco",),
-    "район": ("quartiere", "circoscrizione"),
+    # Tagalog
+    "tirahan": ("residenza", "indirizzo"),
+    "paninirahan": ("residenza",),
+    "naninirahan": ("residenza",),
+    "nakatira": ("residenza",),
+    "tinitirhan": ("residenza", "indirizzo"),
+    "adres": ("indirizzo",),
+    "lumipat": ("trasferimento", "cambio"),
+    "lilipat": ("trasferimento", "cambio"),
+    "paglipat": ("trasferimento", "cambio"),
+    "lipat": ("trasferimento", "cambio"),
+    "palitan": ("cambio", "cambiare"),
+    "papalitan": ("cambio", "cambiare"),
+    "pinalitan": ("cambio",),
+    "pagpapalit": ("cambio",),
+    "magpalit": ("cambio", "cambiare"),
+    "baguhin": ("cambio", "variazione"),
+    "pagbabago": ("cambio", "variazione"),
+    "dokumento": ("documenti",),
+    "dokumentong": ("documenti",),
+    "papeles": ("documenti",),
+    "kailangan": ("necessari",),
+    "kinakailangan": ("necessari", "requisiti"),
+    "rehistro": ("anagrafe", "iscrizione"),
+    "irehistro": ("anagrafe", "iscrizione"),
+    "mairehistro": ("anagrafe", "iscrizione"),
+    "magparehistro": ("anagrafe", "iscrizione"),
+    "pagpaparehistro": ("anagrafe", "iscrizione"),
+    "nakarehistro": ("anagrafe", "iscrizione"),
+    "impormasyon": ("dati", "anagrafici"),
+    "sertipiko": ("certificato", "certificati"),
+    "katibayan": ("certificato",),
+    "kard": ("carta",),
+    "pagkakakilanlan": ("identità",),
+    "elektroniko": ("elettronica",),
+    "pasaporte": ("passaporto",),
+    "bansa": ("estero",),
+    "dayuhan": ("stranieri",),
+    "dayuhang": ("stranieri",),
+    "banyaga": ("stranieri",),
+    "mamamayan": ("cittadini",),
+    "mamamayang": ("cittadini",),
+    "italyano": ("italiani",),
+    "iskedyul": ("appuntamento", "prenotazione"),
+    "magpareserba": ("prenotazione", "prenotare"),
+    "bayad": ("costo",),
+    "magkano": ("costo",),
+    "halaga": ("costo",),
+    "katagal": ("tempi",),
+    "tagal": ("tempi",),
+    "hakbang": ("procedura",),
+    "proseso": ("procedura",),
+    "asikasuhin": ("richiesta", "pratiche"),
+    "organo": ("organi", "donazione"),
+    "donasyon": ("donazione",),
+    "magdonate": ("donazione",),
+    "kapanganakan": ("nascita",),
+    "kasal": ("matrimonio",),
+    "kamatayan": ("morte", "decesso"),
+    "pagkamatay": ("morte", "decesso"),
+    "pamilya": ("famiglia",),
+    "batas": ("legge", "normativa"),
+    "regulasyon": ("normativa",),
+    "munisipyo": ("municipio", "sportello"),
+    "opisina": ("sportello", "ufficio"),
+    # Ucraino (radici)
+    "прожив": ("residenza",),
+    "мешка": ("residenza",),
+    "прописк": ("residenza", "iscrizione"),
+    "адрес": ("indirizzo", "residenza"),
+    "переїзд": ("trasferimento", "cambio"),
+    "переїха": ("trasferimento", "cambio"),
+    "переїж": ("trasferimento", "cambio"),
+    "змін": ("cambio", "variazione"),
+    "документ": ("documenti",),
+    "реєстр": ("iscrizione", "anagrafe"),
+    "зареєстр": ("iscrizione", "anagrafe"),
+    "довідк": ("certificato",),
+    "сертифікат": ("certificato",),
+    "свідоцтв": ("certificato",),
+    "посвідчен": ("carta", "identità"),
+    "посвідк": ("carta", "identità"),
+    "особ": ("identità",),
+    "картк": ("carta",),
+    "електрон": ("elettronica",),
     "паспорт": ("passaporto",),
-    "вид": ("permesso", "residenza"),
-    "регистрация": ("iscrizione", "registrazione"),
-    "документ": ("documento",),
-    "закон": ("legge",),
-    "номер": ("numero",),
-    "дата": ("data",),
-    "цена": ("costo",),
-    "бесплатно": ("gratuito",),
-    "оформление": ("procedura", "domanda"),
-    "страница": ("pagina",),
-    "подпись": ("firma",),
-    "адрес": ("indirizzo",),
-    "телефон": ("telefono",),
-    "email": ("email",),
-    # Filipino
-    "passport": ("passaporto",),
-    "cedula": ("cedula",),
-    "barangay": ("barangay",),
-    "certificate": ("certificato",),
-    "ID": ("identificazione",),
-    "barangay hall": ("sede del barangay",),
-    "municipality": ("municipio",),
-    "city hall": ("comune",),
-    "documentary": ("documentale",),
-    "renewal": ("rinnovo",),
-    "application": ("domanda", "richiesta"),
-    # Bengali
-    "নামা": ("নামা",),  # keep as-is since Bangla
+    "народж": ("nascita",),
+    "шлюб": ("matrimonio",),
+    "смерт": ("morte", "decesso"),
+    "закон": ("legge", "normativa"),
+    "кордон": ("estero",),
+    "іноз": ("stranieri", "estero"),
+    "громадян": ("cittadini",),
+    "запис": ("prenotazione", "appuntamento"),
+    "прийом": ("appuntamento",),
+    "вартіст": ("costo",),
+    "оплат": ("costo",),
+    "донор": ("donazione", "organi"),
+    "трансплант": ("donazione", "organi"),
+    "родин": ("famiglia",),
+    "онлайн": ("online",),
+    "бланк": ("modulo",),
+    "житл": ("abitazione",),
+    # Bengalese (radici)
+    "বাসস্থান": ("residenza",),
+    "বসবাস": ("residenza",),
+    "ঠিকানা": ("indirizzo", "residenza"),
+    "পরিবর্তন": ("cambio",),
+    "স্থানান্তর": ("trasferimento",),
+    "নথি": ("documenti",),
+    "কাগজ": ("documenti",),
+    "ডকুমেন্ট": ("documenti",),
+    "নিবন্ধন": ("iscrizione", "anagrafe"),
+    "রেজিস্ট্রেশন": ("iscrizione", "anagrafe"),
+    "সনদ": ("certificato",),
+    "সার্টিফিকেট": ("certificato",),
+    "প্রত্যয়ন": ("certificato",),
+    "পরিচয়": ("identità", "carta"),
+    "আইডি": ("carta", "identità"),
+    "কার্ড": ("carta",),
+    "ইলেকট্রনিক": ("elettronica",),
     "পাসপোর্ট": ("passaporto",),
-    " certific": ("শবাদপত্র", "certificate",),
-    "আইডি": ("আইডি",),
-    "বই": (" publication",),
-    "শিক্ষা": ("istruzione",),
-    "ভাড়া": ("costo", "tariffa"),
-    "নিবন্ধন": ("registrazione", "iscrizione"),
-    " certificated": ("পত্র", "certificate",),
-    # Arabic
-    "শقة": ("appartamento",),
-    "বিত": ("casa", "villa"),
-    "জওয়ান স্কিপার্ট": ("passaporto",),
-    " ডকুমেন্টো": ("documento",),
-    " আইন": ("legge",),
-    "রম": ("numero",),
-    "তরিখ": ("data",),
-    "থমিন": ("costo", "prezzo"),
-    "মজানু": ("gratuito",),
-    "এ প্রসjár": ("procedura", " pratiche",),
-    "পuesto": ("indirizzo",),
-    "ফোন": ("telefono",),
-    "ইমেল": ("email",),
-    # Chinese (CJK)
-    "護照": ("passaporto",),
-    "居住證": ("certificato di residenza",),
-    "辦理": ("fare", "procedura",),
-    "費用": ("costo", "tariffa"),
-    "免費": ("gratuito",),
-    "文件": ("documento",),
-    "辦事大廳": ("Sportello",),
-    "登記": ("iscrizione", "registrazione"),
-    "身份證": ("carta d'identità",),
+    "জন্ম": ("nascita",),
+    "বিবাহ": ("matrimonio",),
+    "বিয়ে": ("matrimonio",),
+    "মৃত্যু": ("morte", "decesso"),
+    "আইন": ("legge", "normativa"),
+    "বিদেশ": ("estero", "stranieri"),
+    "নাগরিক": ("cittadini",),
+    "অ্যাপয়েন্টমেন্ট": ("appuntamento", "prenotazione"),
+    "বুকিং": ("prenotazione",),
+    "খরচ": ("costo",),
+    "মূল্য": ("costo",),
+    "অঙ্গ": ("organi", "donazione"),
+    "পরিবার": ("famiglia",),
+    "অনলাইন": ("online",),
+    # Arabo (radici, confrontate anche senza articolo "ال" e congiunzione "و")
+    "إقام": ("residenza",),
+    "اقام": ("residenza",),
+    "مقيم": ("residenza",),
+    "سكن": ("residenza", "abitazione"),
+    "عنوان": ("indirizzo",),
+    "تغيير": ("cambio",),
+    "انتقال": ("trasferimento",),
+    "نقل": ("trasferimento",),
+    "وثيق": ("documenti",),
+    "وثائق": ("documenti",),
+    "مستند": ("documenti",),
+    "أوراق": ("documenti",),
+    "اوراق": ("documenti",),
+    "تسجيل": ("iscrizione", "anagrafe"),
+    "سجل": ("anagrafe",),
+    "شهاد": ("certificato",),
+    "بطاق": ("carta",),
+    "هوي": ("identità",),
+    "إلكترون": ("elettronica",),
+    "الكترون": ("elettronica",),
+    "جواز": ("passaporto",),
+    "ولادة": ("nascita",),
+    "ميلاد": ("nascita",),
+    "زواج": ("matrimonio",),
+    "وفاة": ("morte", "decesso"),
+    "قانون": ("legge", "normativa"),
+    "قوانين": ("legge", "normativa"),
+    "مرسوم": ("decreto",),
+    "أجنب": ("stranieri", "estero"),
+    "اجنب": ("stranieri", "estero"),
+    "خارج": ("estero",),
+    "مواطن": ("cittadini",),
+    "موعد": ("appuntamento", "prenotazione"),
+    "حجز": ("prenotazione",),
+    "تكلف": ("costo",),
+    "رسوم": ("costo",),
+    "سعر": ("costo",),
+    "تبرع": ("donazione",),
+    "أعضاء": ("organi",),
+    "اعضاء": ("organi",),
+    "عائل": ("famiglia",),
+    "إنترنت": ("online",),
+    "انترنت": ("online",),
+    # Cinese (sottostringhe, semplificato e tradizionale)
+    "居住": ("residenza",),
+    "户籍": ("residenza", "anagrafe"),
+    "戶籍": ("residenza", "anagrafe"),
+    "户口": ("residenza", "anagrafe"),
+    "戶口": ("residenza", "anagrafe"),
+    "住址": ("indirizzo", "residenza"),
     "地址": ("indirizzo",),
-    "電話": ("telefono",),
-    "電子郵件": ("email",),
+    "搬家": ("trasferimento", "cambio"),
+    "搬到": ("trasferimento",),
+    "迁移": ("trasferimento",),
+    "遷移": ("trasferimento",),
+    "变更": ("cambio",),
+    "變更": ("cambio",),
+    "更改": ("cambio",),
+    "更换": ("cambio",),
+    "更換": ("cambio",),
+    "改变": ("cambio",),
+    "改變": ("cambio",),
+    "文件": ("documenti",),
+    "材料": ("documenti",),
+    "证件": ("documenti",),
+    "證件": ("documenti",),
+    "资料": ("documenti",),
+    "資料": ("documenti",),
+    "登记": ("iscrizione", "anagrafe"),
+    "登記": ("iscrizione", "anagrafe"),
+    "注册": ("iscrizione",),
+    "註冊": ("iscrizione",),
+    "证明": ("certificato",),
+    "證明": ("certificato",),
+    "证书": ("certificato",),
+    "證書": ("certificato",),
+    "身份证": ("carta", "identità"),
+    "身份證": ("carta", "identità"),
+    "电子": ("elettronica",),
+    "電子": ("elettronica",),
+    "护照": ("passaporto",),
+    "護照": ("passaporto",),
+    "出生": ("nascita",),
+    "结婚": ("matrimonio",),
+    "結婚": ("matrimonio",),
+    "婚姻": ("matrimonio",),
+    "死亡": ("morte", "decesso"),
+    "法律": ("legge", "normativa"),
+    "法规": ("normativa",),
+    "法規": ("normativa",),
+    "国外": ("estero",),
+    "國外": ("estero",),
+    "海外": ("estero",),
+    "外国": ("stranieri", "estero"),
+    "外國": ("stranieri", "estero"),
+    "公民": ("cittadini",),
+    "意大利": ("italiani",),
+    "预约": ("prenotazione", "appuntamento"),
+    "預約": ("prenotazione", "appuntamento"),
+    "费用": ("costo",),
+    "費用": ("costo",),
+    "收费": ("costo",),
+    "收費": ("costo",),
+    "多少钱": ("costo",),
+    "多少錢": ("costo",),
+    "器官": ("organi", "donazione"),
+    "捐献": ("donazione",),
+    "捐獻": ("donazione",),
+    "捐赠": ("donazione",),
+    "捐贈": ("donazione",),
+    "家庭": ("famiglia",),
+    "在线": ("online",),
+    "在線": ("online",),
+    "网上": ("online",),
+    "網上": ("online",),
+    "申请": ("richiesta",),
+    "申請": ("richiesta",),
+    "办理": ("richiesta",),
+    "辦理": ("richiesta",),
+    "罗马": ("roma",),
+    "羅馬": ("roma",),
 }
+
+_CJK_RE = re.compile(r"[一-鿿]")
+_LATIN_KEY_RE = re.compile(r"[a-zàèéìòóù0-9]+")
+# Articoli e congiunzioni arabe attaccati alla parola, dal più lungo.
+_ARABIC_PREFIXES = ("بال", "وال", "فال", "لل", "ال", "و")
+
+
+def _glossary_normalize(text: str) -> str:
+    # NFC: il bengalese ammette più codifiche Unicode della stessa lettera.
+    return unicodedata.normalize("NFC", text.lower())
+
+
+_MULTILINGUAL_EXACT: dict[str, tuple[str, ...]] = {}
+_MULTILINGUAL_PREFIX: list[tuple[str, tuple[str, ...]]] = []
+_MULTILINGUAL_SUBSTRING: list[tuple[str, tuple[str, ...]]] = []
+for _key, _terms in _IT_MULTILINGUAL_GLOSSARY.items():
+    _key = _glossary_normalize(_key)
+    if _CJK_RE.search(_key):
+        _MULTILINGUAL_SUBSTRING.append((_key, _terms))
+    elif _LATIN_KEY_RE.fullmatch(_key):
+        _MULTILINGUAL_EXACT[_key] = _terms
+    else:
+        _MULTILINGUAL_PREFIX.append((_key, _terms))
+
+
+def _token_variants(token: str):
+    variants = [token]
+    for prefix in _ARABIC_PREFIXES:
+        if token.startswith(prefix) and len(token) > len(prefix) + 1:
+            variants.append(token[len(prefix):])
+    return variants
+
+
+def _multilingual_terms(token: str):
+    token = _glossary_normalize(token)
+    terms = list(_MULTILINGUAL_EXACT.get(token, ()))
+    if _CJK_RE.search(token):
+        for key, italian in _MULTILINGUAL_SUBSTRING:
+            if key in token:
+                terms.extend(italian)
+        return terms
+    variants = _token_variants(token)
+    for key, italian in _MULTILINGUAL_PREFIX:
+        if any(variant.startswith(key) for variant in variants):
+            terms.extend(italian)
+    return terms
 
 
 def _tokenize(text: str):
@@ -871,10 +1130,12 @@ def _glossary_terms(query: str):
     terms = []
     for token in _tokenize(query):
         # Controlla prima il glossario inglese-italiano, poi quello multilingue.
-        for source in (_EN_IT_GLOSSARY, _IT_MULTILINGUAL_GLOSSARY):
-            for italian in source.get(token, ()):
-                if italian not in terms:
-                    terms.append(italian)
+        for italian in (
+            *_EN_IT_GLOSSARY.get(token, ()),
+            *_multilingual_terms(token),
+        ):
+            if italian not in terms:
+                terms.append(italian)
     return terms
 
 
@@ -882,6 +1143,20 @@ def _glossary_query(query: str) -> str | None:
     """Termini italiani ricavati dal solo glossario interno, o None."""
     terms = _glossary_terms(query)
     return " ".join(terms) if terms else None
+
+
+def _with_glossary(text: str | None, terms) -> str | None:
+    """Accoda a `text` i termini del glossario che non contiene già.
+
+    La traduzione automatica può sbagliare proprio le parole chiave (il
+    tagalog "tirahan", residenza, diventa "posto in affitto"): i termini del
+    glossario le ripristinano senza scartare il resto della traduzione.
+    """
+    if not text:
+        return " ".join(terms) or None
+    present = set(_tokenize(text))
+    extra = [term for term in terms if not set(_tokenize(term)) <= present]
+    return f"{text} {' '.join(extra)}" if extra else text
 
 
 def _query_tokens(query: str, italian: str | None = None):
@@ -893,13 +1168,6 @@ def _query_tokens(query: str, italian: str | None = None):
             if token not in tokens:
                 tokens.append(token)
     return tokens
-
-
-def _rerank_query(query: str, italian: str | None = None) -> str | None:
-    """Testo italiano per il rerank: traduzione o termini del glossario."""
-    if italian:
-        return italian
-    return _glossary_query(query)
 
 
 class _BM25Index:
@@ -1087,27 +1355,34 @@ def _rerank(question: str, records, limit: int, italian: str | None = None):
                 file=sys.stderr,
             )
             return None
-        return sorted(
-            zip(scores, records),
-            key=lambda item: float(item[0]),
-            reverse=True,
+        return [float(value) for value in scores]
+
+    # Varianti della domanda: traduzione (o originale), traduzione arricchita
+    # dal glossario e, senza traduzione, i soli termini del glossario. Ogni
+    # documento tiene il punteggio migliore, così una traduzione sbagliata
+    # non basta a scartare documenti pertinenti.
+    base_query = italian or question
+    glossary_terms = _glossary_terms(question)
+    queries = [base_query, _with_glossary(base_query, glossary_terms)]
+    if not italian and glossary_terms:
+        queries.append(" ".join(glossary_terms))
+
+    best_scores = None
+    for query_text in dict.fromkeys(queries):
+        scores = score(query_text)
+        if scores is None:
+            return records[:limit]
+        best_scores = (
+            scores
+            if best_scores is None
+            else [max(old, new) for old, new in zip(best_scores, scores)]
         )
 
-    rerank_query = italian or question
-    ranked = score(rerank_query)
-    if ranked is None:
-        return records[:limit]
-
-    if MIN_RERANK_SCORE is not None and not any(
-        float(item[0]) >= MIN_RERANK_SCORE for item in ranked
-    ):
-        # Se la traduzione non è disponibile, prova i termini italiani del
-        # glossario prima di concludere che nessun documento è pertinente.
-        alternate_query = _rerank_query(question) if not italian else None
-        if alternate_query and alternate_query != rerank_query:
-            retried = score(alternate_query)
-            if retried is not None:
-                ranked = retried
+    ranked = sorted(
+        zip(best_scores, records),
+        key=lambda item: item[0],
+        reverse=True,
+    )
 
     if MIN_RERANK_SCORE is not None:
         ranked = [
@@ -1140,7 +1415,9 @@ def query_collection(question, n_results=DEFAULT_N_RESULTS):
     # densa, rerank e riferimenti normativi; BM25 conserva anche i token
     # originali per sigle e nomi propri.
     translated = translate_to_italian(question)
-    search_text = translated or _glossary_query(question) or question
+    search_text = _with_glossary(
+        translated or question, _glossary_terms(question)
+    )
 
     refs = _merge_regulation_refs(question, search_text)
 

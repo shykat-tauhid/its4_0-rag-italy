@@ -16,6 +16,8 @@ try:
         primary_model_name,
     )
     from .vectorize import populate_db, query_collection
+    from .translate import localize
+    from .conversation_pdf import save_conversation_pdf
 except ImportError:
     llm = importlib.import_module("llm")
     NO_INFORMATION_ANSWER = llm.NO_INFORMATION_ANSWER
@@ -27,6 +29,11 @@ except ImportError:
     vectorize = importlib.import_module("vectorize")
     populate_db = vectorize.populate_db
     query_collection = vectorize.query_collection
+    # Stesso modulo usato da vectorize: condivide cache e circuit breaker.
+    localize = importlib.import_module("src.rag.translate").localize
+    save_conversation_pdf = importlib.import_module(
+        "src.rag.conversation_pdf"
+    ).save_conversation_pdf
 
 load_dotenv()
 populate_db(reset=os.getenv("RESET_CHROMA", "").lower() in ["1", "true", "yes"])
@@ -38,6 +45,7 @@ MAX_QUESTION_LENGTH = 2000
 N_RESULTS = 8
 
 conversation = []
+transcript = []  # intera conversazione, per i PDF finali
 last_question = None
 last_services = []
 
@@ -107,7 +115,10 @@ while True:
     documents, metadatas, merged = retrieve(question)
     documents, metadatas = prioritize_known_services(documents, metadatas)
     if not documents:
-        print(f"{primary_model_name()}: {NO_INFORMATION_ANSWER}\n")
+        print(
+            f"{primary_model_name()}: "
+            f"{localize(NO_INFORMATION_ANSWER, question)}\n"
+        )
         continue
 
     # Ancoraggio al tema appena recuperato: vale anche se la generazione
@@ -140,3 +151,12 @@ while True:
     conversation.append({"role": "user", "content": question})
     conversation.append({"role": "assistant", "content": assistant})
     del conversation[:-MAX_HISTORY_TURNS * 2]
+    transcript.append({"role": "user", "content": question})
+    transcript.append({"role": "assistant", "content": assistant})
+
+if transcript:
+    try:
+        pdf_path = save_conversation_pdf(transcript)
+        print(f"PDF salvati:\n  {italian_pdf}\n  {original_pdf}")
+    except Exception as exc:
+        print(f"[rag] Impossibile creare i PDF: {exc}")
