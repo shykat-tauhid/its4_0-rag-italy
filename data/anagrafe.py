@@ -190,15 +190,18 @@ docs = [
             Utilizzare uno dei seguenti dispositivi: Un computer connesso a un lettore di smart card RFID tramite USB, sul quale sia installato e configurato il software fornito dal Ministero dell'Interno. Il software è disponibile al seguente link .
             Uno smartphone Android (versione 6.0 o successiva) con browser Chrome, dotato di interfaccia NFC e con l'app CIE ID installata e configurata. L'app è scaricabile dal Play Store di Google. Maggiori dettagli e tutorial sono disponibili al seguente link .
             Se si smarriscono i codici PIN o PUK, non è necessario richiedere una nuova CIE. Gli Uffici Anagrafici sono competenti per la ristampa dei codici. Gli operatori provvederanno a fornire i nuovi codici PIN e PUK previa identificazione del cittadino, senza bisogno di prenotazione.
-            Per il primo rilascio o rinnovo: Fototessera, Eventuale carta di identità scaduta (in caso di rinnovo) Documento di riconoscimento valido. In assenza di tale documento, sono richiesti due testimoni maggiorenni, muniti di documento valido, che possano attestare l'identità del richiedente.
-            Codice fiscale o tessera sanitaria
-            Per il duplicato (in caso di deterioramento, furto o smarrimento):
-            Documentazione prevista per il rinnovo:
-            Carta di identità deteriorata
-            Denuncia originale presentata all'Autorità di Pubblica Sicurezza
-            Costi
-            Prima emissione o rinnovo: € 22,21
-            Duplicato: € 27,37
+            Documenti per il primo rilascio o il rinnovo della CIE:
+            Fototessera.
+            Documento di riconoscimento valido. In assenza di tale documento, sono richiesti due testimoni maggiorenni, muniti di documento valido, che possano attestare l'identità del richiedente.
+            Codice fiscale o tessera sanitaria.
+            In caso di rinnovo, carta d'identità scaduta.
+            Documenti per il duplicato della CIE in caso di deterioramento, furto o smarrimento:
+            Documentazione prevista per il rinnovo.
+            In caso di deterioramento, carta d'identità deteriorata.
+            In caso di furto o smarrimento, denuncia originale presentata all'Autorità di Pubblica Sicurezza.
+            Costi di rilascio e rinnovo:
+            Prima emissione o rinnovo: € 22,21.
+            Duplicato: € 27,37.
         """,
         "needed_docs": [
             "02-Modulo_richiesta_CIE_Rev2_privacy.pdf",

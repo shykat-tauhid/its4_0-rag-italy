@@ -28,6 +28,8 @@ LOCAL_MODEL_URL = os.getenv("LOCAL_MODEL_URL", "").strip()
 LOCAL_MODEL_TIMEOUT_SECONDS = float(os.getenv("LOCAL_MODEL_TIMEOUT", "300"))
 LOCAL_MODEL_ATTEMPTS = max(1, int(os.getenv("LOCAL_MODEL_ATTEMPTS", "1")))
 LOCAL_MODEL_MAX_TOKENS = int(os.getenv("LOCAL_MODEL_MAX_TOKENS", "0")) or None
+# Temperatura bassa: per un RAG servono risposte fedeli al contesto, non creative.
+LOCAL_MODEL_TEMPERATURE = float(os.getenv("LOCAL_MODEL_TEMPERATURE", "0.2"))
 # Con il contesto completo il modello locale va in timeout: usa meno documenti
 # e nessun metadato JSON.
 LOCAL_CONTEXT_DOCUMENTS = max(1, int(os.getenv("LOCAL_CONTEXT_DOCUMENTS", "3")))
@@ -43,7 +45,36 @@ LOCAL_MODEL_PRIMARY = os.getenv("LOCAL_MODEL_PRIMARY", "").strip().lower() in {
 REQUEST_TIMEOUT_SECONDS = float(os.getenv("GEMINI_TIMEOUT", "60"))
 MAX_ATTEMPTS = max(1, int(os.getenv("GEMINI_MAX_ATTEMPTS", "3")))
 RETRY_BASE_DELAY = float(os.getenv("GEMINI_RETRY_DELAY", "0.8"))
+# Vuota = temperatura predefinita di Gemini: per i modelli Gemini 3 Google
+# sconsiglia di abbassarla (rischio di ripetizioni e risposte degradate).
+GEMINI_TEMPERATURE = (
+    float(os.getenv("GEMINI_TEMPERATURE")) if os.getenv("GEMINI_TEMPERATURE") else None
+)
 RETRYABLE_STATUS = {408, 409, 429, 500, 502, 503, 504}
+
+# Regole comuni ai due prompt, scritte dopo gli errori visti nei test
+# multilingua (sigle tradotte male, norme citate in modo generico).
+_COMMON_RULES = """
+Non tradurre le sigle italiane (CIE, PEC, AIRE, ANPR, SPID, URP): lasciale
+come sono. Se le spieghi, usa solo questi significati:
+- CIE: Carta d'Identità Elettronica;
+- PEC: Posta Elettronica Certificata;
+- AIRE: Anagrafe degli Italiani Residenti all'Estero (non è un registro degli
+  stranieri);
+- ANPR: Anagrafe Nazionale della Popolazione Residente;
+- SPID: Sistema Pubblico di Identità Digitale.
+
+Quando citi una norma, indicala accanto all'informazione a cui si riferisce,
+con tipo, numero e anno (es. "D.P.R. 223/1989, art. 33"). Se il testo della
+norma rimanda ad altre disposizioni (es. "articoli 75 e 76 del D.P.R.
+445/2000"), riporta quei riferimenti invece di espressioni generiche come
+"previste dalla legge". Non aggiungere in fondo una sezione che riassume le
+norme già citate.
+
+Se una norma dice che un regolamento futuro "dovrà prevedere" o "prevede"
+qualcosa, non presentarlo come regola già in vigore: spiega che la norma
+rimanda a un regolamento.
+"""
 
 SYSTEM_PROMPT = """
 Sei l'assistente informativo di un totem per i servizi della Pubblica
@@ -59,11 +90,17 @@ terminologia della Pubblica Amministrazione.
 
 Rispondi nella stessa lingua usata dall'utente; 
 se non è chiara, rispondi in italiano.
+Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
+prevede più sistemi di scrittura.
 
-Se nel contesto è presente una normativa pertinente, indicala e descrivi
-brevemente quello che dice. Non dire "sulla base del contesto" o "nei
-documenti forniti"; rispondi direttamente alla domanda.
-"""
+Usa i passaggi del contesto che rispondono direttamente alla domanda. Non
+confondere informazioni di servizi diversi o le modalità di prenotazione con
+i documenti da presentare. Cita una norma solo se il contesto collega
+chiaramente quella norma all'informazione riportata; non attribuire alla norma
+regole descritte separatamente come modalità del servizio. Non dire "sulla
+base del contesto" o "nei documenti forniti"; rispondi direttamente alla
+domanda.
+""" + _COMMON_RULES
 
 # Prompt ridotto per il fallback locale: i modelli piccoli seguono meglio
 # istruzioni brevi e con il contesto compatto restano nei tempi.
@@ -73,15 +110,19 @@ Sei l'assistente di un totem per i servizi anagrafici di Roma Capitale.
 Rispondi solo con le informazioni presenti nel CONTESTO. Se non bastano,
 dillo. Non inventare procedure, documenti, scadenze, costi o normative.
 
-Se nel contesto è presente una normativa pertinente, indicala e descrivi
-brevemente quello che dice.
+Se nel contesto è presente una normativa pertinente alla domanda, citala.
 
 Usa frasi brevi e un linguaggio semplice. Rispondi OBBLIGATORIAMENTE nella
 stessa lingua della DOMANDA DELL'UTENTE.
+Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
+prevede più sistemi di scrittura.
 
-Non copiare il
-testo italiano del contesto.
-"""
+Non confondere informazioni di servizi diversi o le modalità di prenotazione
+con i documenti da presentare. Cita una norma solo se il contesto collega
+chiaramente quella norma all'informazione riportata; non attribuire alla norma
+regole descritte separatamente come modalità del servizio.
+Non copiare il testo italiano del contesto.
+""" + _COMMON_RULES
 
 NO_INFORMATION_ANSWER = (
     "Non ho trovato informazioni sufficienti per rispondere a questa domanda. "
@@ -180,8 +221,21 @@ def build_context(documents, metadatas, include_metadata=True) -> str:
                 f"Documento Estratto:\n{document}"
             )
         else:
-            context_items.append(f"Documento Estratto:\n{document}")
+            header = _compact_source(metadatas[index] if index < len(metadatas) else None)
+            context_items.append(f"{header}Documento Estratto:\n{document}")
     return "\n\n---\n\n".join(context_items)
+
+
+def _compact_source(metadata) -> str:
+    """Riga di provenienza per il contesto compatto, al posto del JSON.
+
+    Il testo delle norme non dice a quale servizio si riferiscono: senza questa
+    riga il modello locale non sa collegare la norma al servizio giusto.
+    """
+    if not metadata or metadata.get("type") != "regulation":
+        return ""
+    service = metadata.get("service")
+    return f"Norma collegata al servizio: {service}\n" if service else ""
 
 
 def build_messages(question, documents, metadatas, history=None, compact=False):
@@ -227,11 +281,14 @@ def _ask_with_client(
     messages,
     attempts: int = MAX_ATTEMPTS,
     max_tokens: int | None = None,
+    temperature: float | None = None,
 ) -> str:
     last_error: Exception | None = None
     request = {"model": model, "messages": messages}
     if max_tokens:
         request["max_tokens"] = max_tokens
+    if temperature is not None:
+        request["temperature"] = temperature
 
     for attempt in range(1, attempts + 1):
         try:
@@ -262,16 +319,19 @@ def _ask_with_client(
     ) from last_error
 
 
-def _target_profile(is_local: bool) -> tuple[str, bool, int, int | None]:
-    """(modello, contesto compatto, tentativi, max_tokens) per locale/Gemini."""
+def _target_profile(
+    is_local: bool,
+) -> tuple[str, bool, int, int | None, float | None]:
+    """(modello, contesto compatto, tentativi, max_tokens, temperatura)."""
     if is_local:
         return (
             LOCAL_MODEL_NAME,
             True,
             LOCAL_MODEL_ATTEMPTS,
             LOCAL_MODEL_MAX_TOKENS,
+            LOCAL_MODEL_TEMPERATURE,
         )
-    return MODEL, False, MAX_ATTEMPTS, None
+    return MODEL, False, MAX_ATTEMPTS, None, GEMINI_TEMPERATURE
 
 
 def ask(
@@ -289,9 +349,13 @@ def ask(
     falliscono, solleva `ModelUnavailableError`.
     """
     primary_is_local = local_primary_enabled()
-    primary_model, primary_compact, primary_attempts, primary_max_tokens = (
-        _target_profile(primary_is_local)
-    )
+    (
+        primary_model,
+        primary_compact,
+        primary_attempts,
+        primary_max_tokens,
+        primary_temperature,
+    ) = _target_profile(primary_is_local)
 
     messages = build_messages(
         question, documents, metadatas, history, compact=primary_compact
@@ -304,11 +368,16 @@ def ask(
             messages,
             attempts=primary_attempts,
             max_tokens=primary_max_tokens,
+            temperature=primary_temperature,
         )
     except (ModelUnavailableError, OpenAIError):
-        fallback_model, fallback_compact, fallback_attempts, fallback_max_tokens = (
-            _target_profile(not primary_is_local)
-        )
+        (
+            fallback_model,
+            fallback_compact,
+            fallback_attempts,
+            fallback_max_tokens,
+            fallback_temperature,
+        ) = _target_profile(not primary_is_local)
         if fallback_client is None or not fallback_model:
             raise
 
@@ -330,6 +399,7 @@ def ask(
                 fallback_messages,
                 attempts=fallback_attempts,
                 max_tokens=fallback_max_tokens,
+                temperature=fallback_temperature,
             )
         except (ModelUnavailableError, OpenAIError) as fallback_error:
             raise ModelUnavailableError(

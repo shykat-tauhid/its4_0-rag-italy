@@ -240,6 +240,57 @@ def test_messages_without_history_are_system_plus_user():
     assert [message["role"] for message in messages] == ["system", "user"]
 
 
+def test_system_prompts_prevent_conflating_service_rules_and_regulations():
+    assert "Cita una norma solo se il contesto collega" in llm.SYSTEM_PROMPT
+    assert "modalità di prenotazione" in llm.SYSTEM_PROMPT
+    assert "sistema di scrittura usato dall'utente" in llm.SYSTEM_PROMPT
+    assert "Cita una norma solo se il contesto collega" in llm.LOCAL_SYSTEM_PROMPT
+    assert "modalità di prenotazione" in llm.LOCAL_SYSTEM_PROMPT
+    assert "sistema di scrittura usato dall'utente" in llm.LOCAL_SYSTEM_PROMPT
+
+
+def test_system_prompts_keep_acronyms_and_precise_citations():
+    for prompt in (llm.SYSTEM_PROMPT, llm.LOCAL_SYSTEM_PROMPT):
+        assert "Anagrafe degli Italiani Residenti all'Estero" in prompt
+        assert "Non tradurre le sigle" in prompt
+        assert "Non aggiungere in fondo una sezione" in prompt
+        assert "regolamento futuro" in prompt
+
+
+def test_compact_context_names_service_of_regulations():
+    docs = ["Normativa: D.L. 5 del 9 febbraio 2012", "Servizio: CIE"]
+    metas = [
+        {"service": "Cambi di Residenza", "type": "regulation"},
+        {"service": "CIE", "type": "service"},
+    ]
+
+    context = llm.build_context(docs, metas, include_metadata=False)
+
+    assert "Norma collegata al servizio: Cambi di Residenza" in context
+    assert "Norma collegata al servizio: CIE" not in context
+    assert "Metadati" not in context
+
+
+def test_local_model_uses_low_temperature(monkeypatch):
+    monkeypatch.setattr(llm, "LOCAL_MODEL_NAME", "modello-locale")
+    monkeypatch.setattr(llm, "LOCAL_MODEL_PRIMARY", True)
+    monkeypatch.setattr(llm, "LOCAL_MODEL_TEMPERATURE", 0.2)
+    client = FakeClient(["ok"])
+
+    llm.ask(client, "domanda", *documents())
+
+    assert client.requests[0]["temperature"] == 0.2
+
+
+def test_gemini_keeps_default_temperature(monkeypatch):
+    monkeypatch.setattr(llm, "GEMINI_TEMPERATURE", None)
+    client = FakeClient(["ok"])
+
+    llm.ask(client, "domanda", *documents())
+
+    assert "temperature" not in client.requests[0]
+
+
 def test_retryable_predicate():
     assert llm._is_retryable(FakeStatusError(503))
     assert llm._is_retryable(APIConnectionError(request=None))
