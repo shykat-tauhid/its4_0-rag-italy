@@ -1,0 +1,103 @@
+<div class="page" [class.kb-open]="keyboardOpen()" [class.split]="!!viewer.link()" [class.rtl]="state.isRtl()" [attr.dir]="state.dir()" [attr.lang]="state.selectedLanguage()">
+  <header class="top-bar">
+    <button class="action-btn back-btn" (click)="goBack()" type="button" [attr.dir]="state.dir()">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      <span>{{ state.t('back') }}</span>
+    </button>
+    <button class="action-btn print-btn" (click)="printConversation()" type="button"
+            [disabled]="!canPrint()" [attr.aria-busy]="printStatus() === 'printing'">
+      <i class="fa-solid" aria-hidden="true"
+         [class.fa-print]="printStatus() === 'idle'"
+         [class.fa-spinner]="printStatus() === 'printing'" [class.fa-spin]="printStatus() === 'printing'"
+         [class.fa-check]="printStatus() === 'done'"
+         [class.fa-triangle-exclamation]="printStatus() === 'error'"></i>
+      <span aria-live="polite">{{ printLabel() }}</span>
+    </button>
+  </header>
+
+  <button type="button" class="lang-switch" (click)="goToLanguageSelection()"
+          [attr.aria-label]="state.t('changeLang')" [title]="state.t('changeLang')">
+    <span class="lang-switch-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+  </button>
+
+  <div class="chat-layout">
+  <section class="chatbot-container" aria-labelledby="chat-title">
+    <div class="chat-header">
+      <img class="brand brand-light" src="logo-tramite-wordmark.png" alt="Tramite" />
+      <img class="brand brand-dark" src="logo-tramite-wordmark-negativo.png" alt="Tramite" />
+      <h1 id="chat-title">
+        <i class="fa-solid" [class.fa-id-card]="state.activeService() === 'anagrafica'"
+           [class.fa-house]="state.activeService() === 'affitto'" aria-hidden="true"></i>
+        {{ state.activeService() === 'anagrafica' ? state.t('serviceAnagrafica') : state.t('serviceAffitto') }}
+      </h1>
+    </div>
+
+    <div class="chat-messages" #messagesBox role="log" aria-live="polite">
+      @for (msg of state.chatMessages(); track $index) {
+        <div class="message-row" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
+          @if (msg.sender === 'bot') {
+            <span class="bot-avatar" aria-hidden="true"><img src="logo-tramite-icona.png" alt="" /></span>
+          }
+          <div class="message-bubble" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'" [class.typing]="msg.pending">
+            @if (msg.pending) {
+              <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
+              <span class="sr-only">{{ state.t('typing') }}</span>
+            } @else {
+              <span class="message-text">{{ msg.text }}</span>
+            }
+
+            @if (msg.forms?.length) {
+              <div class="message-links">
+                <span class="links-label">{{ state.t('formsLabel') }}</span>
+                @for (form of msg.forms; track form.id) {
+                  <a class="form-link" [href]="form.url" (click)="openLink($event, { url: form.url, title: form.title })">
+                    <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+                    <span>{{ form.title }}</span>
+                  </a>
+                }
+              </div>
+            }
+
+            @if (msg.sources?.length) {
+              <div class="message-links">
+                <span class="links-label">{{ state.t('sourcesLabel') }}</span>
+                @for (source of msg.sources; track source.number) {
+                  @if (source.url) {
+                    <a class="source-link" [href]="source.url" (click)="openLink($event, { url: source.url, title: source.title, copy: source.copy })">[{{ source.number }}] {{ source.title }}</a>
+                  } @else {
+                    <span class="source-link">[{{ source.number }}] {{ source.title }}</span>
+                  }
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <form class="chat-input-area" (ngSubmit)="sendMessage()">
+      <label for="chat-input" class="sr-only">{{ state.t('inputPlaceholder') }}</label>
+      <input #chatInput id="chat-input" type="text" name="message" autocomplete="off" spellcheck="false" inputmode="none"
+             [(ngModel)]="newMessage" [placeholder]="state.t('inputPlaceholder')"
+             (focus)="keyboardOpen.set(true)" (click)="keyboardOpen.set(true)" />
+      <button type="submit" [disabled]="waiting() || !newMessage().trim()"
+              [title]="state.t('send')" [attr.aria-label]="state.t('send')">
+        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+      </button>
+    </form>
+  </section>
+
+  @if (viewer.link()) {
+    <app-link-viewer class="chat-viewer" />
+  }
+  </div>
+
+  @if (keyboardOpen()) {
+    <app-virtual-keyboard
+      [lang]="state.selectedLanguage()"
+      [target]="chatInput"
+      [(value)]="newMessage"
+      (enter)="sendMessage()"
+      (close)="closeKeyboard()" />
+  }
+</div>

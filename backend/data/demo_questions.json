@@ -1,0 +1,76 @@
+[
+  {
+    "language": "it",
+    "question": "Quanto costa la carta d'identità elettronica?",
+    "follow_up": ["E per mio figlio di 10 anni cosa serve?"]
+  },
+  {
+    "language": "it",
+    "question": "Ho rinnovato il permesso di soggiorno: devo comunicarlo all'anagrafe?"
+  },
+  {
+    "language": "uk",
+    "question": "Я громадянин України і маю посвідку на проживання (permesso di soggiorno). Як зареєструватися в анаграфе в Римі?",
+    "meaning": "Sono cittadino ucraino e ho il permesso di soggiorno. Come mi iscrivo all'anagrafe di Roma?",
+    "follow_up": [
+      {"question": "Які документи потрібно принести?", "meaning": "Quali documenti devo portare?"}
+    ]
+  },
+  {
+    "language": "uk",
+    "question": "Що таке autocertificazione і коли її можна використовувати?",
+    "meaning": "Che cos'è l'autocertificazione e quando si può usare?"
+  },
+  {
+    "language": "zh",
+    "question": "我在罗马市内搬家了，需要怎么更改住址？",
+    "meaning": "Ho traslocato all'interno di Roma: come cambio l'indirizzo?",
+    "follow_up": [
+      {"question": "可以在网上办理吗？", "meaning": "Si può fare online?"}
+    ]
+  },
+  {
+    "language": "zh",
+    "question": "我刚获得意大利国籍，办理手续需要带哪些文件？",
+    "meaning": "Ho appena ottenuto la cittadinanza italiana: quali documenti devo portare?"
+  },
+  {
+    "language": "bn",
+    "question": "অনলাইনে কীভাবে বসবাসের সার্টিফিকেট (certificato di residenza) পাওয়া যায়?",
+    "meaning": "Come si ottiene online il certificato di residenza?",
+    "follow_up": [
+      {"question": "এর জন্য কি কোনো খরচ আছে?", "meaning": "Costa qualcosa?"}
+    ]
+  },
+  {
+    "language": "bn",
+    "question": "রোমে ভালো বিরিয়ানি কোথায় পাওয়া যায়?",
+    "meaning": "Dove trovo un buon biryani a Roma? (fuori tema: deve rifiutare)"
+  },
+  {
+    "language": "tl",
+    "question": "Valid pa ba ang luma kong papel na carta d'identità?",
+    "meaning": "La mia vecchia carta d'identità cartacea è ancora valida?",
+    "follow_up": [
+      {"question": "Paano ako magpapa-appointment para sa bagong CIE?", "meaning": "Come prendo l'appuntamento per la nuova CIE?"}
+    ]
+  },
+  {
+    "language": "tl",
+    "question": "Maraming salamat po!",
+    "meaning": "Grazie mille! (saluto: risposta breve, senza fonti)"
+  },
+  {
+    "language": "ar",
+    "question": "تزوجت في المغرب وأعيش الآن في روما. كيف أسجل عقد زواجي هنا؟",
+    "meaning": "Mi sono sposato in Marocco e ora vivo a Roma. Come registro qui il mio matrimonio?",
+    "follow_up": [
+      {"question": "هل يجب ترجمة الوثائق إلى الإيطالية؟", "meaning": "I documenti vanno tradotti in italiano?"}
+    ]
+  },
+  {
+    "language": "ar",
+    "question": "أنا مريض ولا أستطيع الذهاب إلى البلدية. هل يمكن لموظف السجل المدني أن يأتي إلى منزلي؟",
+    "meaning": "Sono malato e non posso andare in Municipio. Un ufficiale d'anagrafe può venire a casa mia?"
+  }
+]

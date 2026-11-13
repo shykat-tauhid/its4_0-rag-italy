@@ -1,0 +1,91 @@
+<!-- Same markup and classes as the web app's panel (public/webapp/accessibility.js). -->
+<div [attr.dir]="state.dir()" [attr.lang]="state.selectedLanguage()">
+  <div class="a11y-panel" id="a11yPanel" role="dialog" aria-labelledby="a11yTitle" [hidden]="!open()">
+    <div class="a11y-head">
+      <h2 id="a11yTitle" tabindex="-1" #title>{{ state.t('a11yTitle') }}</h2>
+      <button type="button" class="a11y-x" (click)="close()" [attr.aria-label]="state.t('a11y.close')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="a11y-body">
+      <section class="a11y-sec">
+        <h3>{{ state.t('a11y.textSize') }}</h3>
+        <div class="a11y-size">
+          <button type="button" (click)="changeText(-1)" [disabled]="a11y.prefs().fs <= minText" [attr.aria-label]="state.t('a11y.decrease')">A&minus;</button>
+          <output aria-live="polite">{{ a11y.prefs().fs }}%</output>
+          <button type="button" (click)="changeText(1)" [disabled]="a11y.prefs().fs >= maxText" [attr.aria-label]="state.t('a11y.increase')">A+</button>
+        </div>
+      </section>
+
+      <section class="a11y-sec">
+        <h3>{{ state.t('a11y.font') }}</h3>
+        <div class="a11y-opts">
+          @for (font of fonts; track font) {
+            <button type="button" class="a11y-opt a11y-opt--font" [attr.data-preview]="font"
+                    [attr.aria-pressed]="a11y.prefs().font === font"
+                    (click)="choose('font', font, state.t(fontInfo[font].label))">
+              <span><span class="t">{{ state.t(fontInfo[font].label) }}</span><small>{{ fontInfo[font].family }}</small></span>
+              <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="a11y-sec">
+        <h3>{{ state.t('a11y.colors') }}</h3>
+        <div class="a11y-opts">
+          @for (cvd of colorVisions; track cvd) {
+            <button type="button" class="a11y-opt"
+                    [attr.aria-pressed]="a11y.prefs().cvd === cvd"
+                    (click)="choose('cvd', cvd, state.t(colorInfo[cvd].label))">
+              <span class="a11y-sw" aria-hidden="true">
+                @for (color of colorInfo[cvd].swatch; track $index) {
+                  <i [style.background]="color"></i>
+                }
+              </span>
+              <span><span class="t">{{ state.t(colorInfo[cvd].label) }}</span><small>{{ state.t(colorInfo[cvd].desc) }}</small></span>
+              <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="a11y-sec">
+        <h3>{{ state.t('a11y.theme') }}</h3>
+        <div class="a11y-opts c3">
+          @for (theme of themes; track theme) {
+            <button type="button" class="a11y-opt"
+                    [attr.aria-pressed]="a11y.prefs().theme === theme"
+                    (click)="choose('theme', theme, state.t(themeLabels[theme]))">
+              <span><span class="t">{{ state.t(themeLabels[theme]) }}</span></span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="a11y-sec">
+        <h3>{{ state.t('a11y.readMotion') }}</h3>
+        @for (sw of switches; track sw.key) {
+          <button type="button" class="a11y-switch" role="switch"
+                  [attr.aria-checked]="a11y.prefs()[sw.key]"
+                  (click)="flip(sw.key, state.t(sw.label))">
+            <span>{{ state.t(sw.label) }}</span><span class="trk" aria-hidden="true"></span>
+          </button>
+        }
+      </section>
+    </div>
+
+    <div class="a11y-foot">
+      <button type="button" class="a11y-reset" (click)="resetAll()">{{ state.t('a11y.resetAll') }}</button>
+    </div>
+  </div>
+
+  <button type="button" class="a11y-fab" #fab (click)="toggle()"
+          aria-haspopup="dialog" aria-controls="a11yPanel"
+          [attr.aria-expanded]="open()" [attr.aria-label]="state.t('a11y.opts')">
+    <i class="fa-solid" [class.fa-universal-access]="!open()" [class.fa-xmark]="open()" aria-hidden="true"></i>
+  </button>
+
+  <div class="sr-only" role="status" aria-live="polite">{{ announcement() }}</div>
+</div>

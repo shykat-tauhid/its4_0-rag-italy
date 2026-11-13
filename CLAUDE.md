@@ -4,50 +4,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-RAG chatbot answering questions about Roma Capitale registry services (anagrafe) and the related regulations. The corpus, code comments, prompts, log messages and README are in **Italian**; keep new user-facing strings and comments in Italian to match.
+"Totem": a touch-screen kiosk that helps foreign residents of Rome with registry-office (anagrafe) procedures. The user picks a language, asks a question (voice or on-screen keyboard) and gets a written and spoken answer from a RAG chatbot. Code comments, prompts, logs and corpus are mostly in **Italian**; keep new user-facing strings and comments in Italian to match.
+
+Two independent projects, no root build tooling and no git repo at the root:
+
+| Folder | Stack | Notes |
+| --- | --- | --- |
+| `backend/` | Python 3.13, `uv`, FastAPI, Chroma, sentence-transformers, OpenAI client (Gemini / Ollama) | Has its own detailed `backend/CLAUDE.md` (config env vars, retrieval pipeline, import quirks) — read it before touching the backend. |
+| `frontend/frontend/` | Angular 21 (standalone components, signals), Vitest | The real Angular app is nested one level deeper than `frontend/`. |
+| `frontend/kiosk/` | PowerShell | Launches Chrome in `--kiosk` mode. |
+
+Windows/PowerShell environment.
 
 ## Commands
 
-Python 3.13, managed with `uv` (Windows/PowerShell environment; `.editorconfig` uses CRLF line endings).
+Backend (from `backend/`):
 
 ```powershell
-uv sync                                              # install deps (incl. dev group: pytest)
-uv run uvicorn rag.endpoint:app --reload             # HTTP API on :8000 (/api/chat, /api/health, /docs)
-uv run python src/rag/call_model_openai.py           # interactive terminal REPL (with short conversation history)
-uv run python src/rag/vectorize.py                   # (re)populate the Chroma index only
-uv run pytest                                        # all tests
-uv run pytest tests/test_llm.py::test_name           # single test
+uv sync
+uv run uvicorn rag.endpoint:app --reload     # API on :8000
+uv run pytest                                # all tests
+uv run pytest tests/test_llm.py::test_name   # single test
 ```
 
-The Angular frontend that calls `POST /api/chat` (`{"question": ...}` → `{"answer": ...}`) is not in this repo; its default origin `http://localhost:4200` is allowed via CORS.
+Frontend (from `frontend/frontend/`):
 
-Note: `pyproject.toml` declares the script `rag = "rag:main"`, but `rag/__init__.py` defines no `main`, so the `rag` console script is broken.
+```powershell
+npm install
+npm start                                    # ng serve on :4200
+npm run build                                # production build -> dist/
+npm test                                     # ng test (Vitest, jsdom)
+npx ng test --include src/app/chatbot.component/chatbot.component.spec.ts   # single spec file
+```
 
-## Configuration
+Run `ng test` from a path with an upper-case drive letter (`C:\...`): from `c:\...` Vitest loads twice and every spec fails with "Vitest failed to find the runner".
 
-Read from `.env` in the project root via `python-dotenv`. Key variables:
-- `VALERIO_API` — Gemini API key (Gemini is called through its OpenAI-compatible endpoint with the `openai` client; model constant `MODEL` in `llm.py`).
-- `LOCAL_MODEL_NAME` / `LOCAL_MODEL_URL` / `LOCAL_MODEL_PRIMARY` / `LOCAL_MODEL_TIMEOUT` / `LOCAL_MODEL_MAX_TOKENS` (keep `0`: Ollama counts reasoning tokens, low limits truncate answers) / `LOCAL_CONTEXT_DOCUMENTS` / `LOCAL_MODEL_API_KEY` / `LOCAL_MODEL_CONTEXT` — local OpenAI-compatible model (e.g. Ollama). `LOCAL_MODEL_CONTEXT>0` switches the local client to Ollama's native `/api/chat` (`OllamaChatClient`) because `/v1` ignores `num_ctx` and caps at 4096 tokens, which thinking models exhaust before answering (empty content, `finish_reason=length`). `LOCAL_MODEL_PRIMARY=1` swaps the order (local first, Gemini as fallback). Without `VALERIO_API` the local model is the only model.
-- `LIBRETRANSLATE_URL` / `LIBRETRANSLATE_LANGUAGES` (default `en,it,uk,tl,bn,ar,zh`) / `LIBRETRANSLATE_TIMEOUT` / `LIBRETRANSLATE_FAILURES` / `LIBRETRANSLATE_COOLDOWN`.
-- `GEMINI_TIMEOUT` / `GEMINI_MAX_ATTEMPTS` / `GEMINI_RETRY_DELAY` — retry/backoff tuning.
-- `ANGULAR_ORIGINS` (CORS, comma-separated), `RESET_CHROMA=1` (rebuild index at startup), `HF_HUB_OFFLINE=1` (offline with cached models).
-- `EMBEDDING_MODEL` (default `intfloat/multilingual-e5-base`; must be an e5-family model because of the `passage: `/`query: ` prefixes). Changing it triggers an automatic reindex via the fingerprint.
-- Retrieval tuning env vars in `vectorize.py`: `CANDIDATE_POOL`, `LEXICAL_CANDIDATES`, `REGULATION_QUOTA`, `RERANK_MODEL` (set to `off`/`0` to disable), `RERANK_SCORE_MARGIN`, `MIN_RERANK_SCORE`, `MAX_DENSE_DISTANCE`, etc.
+Prettier config: `printWidth: 100`, `singleQuote: true`.
 
-Many module-level constants are read from env **at import time**; tests override them with `monkeypatch.setattr(module, "CONST", ...)`.
+Kiosk: run `frontend/kiosk/avvia-totem.bat` (Chrome kiosk on `http://localhost:4200/`, dedicated profile in `%LOCALAPPDATA%\TotemKiosk`; exit with Alt+F4).
 
-## Architecture
+## Frontend ↔ backend contract
 
-Request flow: `endpoint.py` (FastAPI) or `call_model_openai.py` (REPL) → `vectorize.query_collection()` → `llm.ask()`.
+The frontend base URL is hard-coded in `frontend/frontend/src/app/api.config.ts` (`http://localhost:8000`); the backend's CORS allow-list comes from `ANGULAR_ORIGINS` (default `http://localhost:4200`). Kiosk endpoints live in `backend/src/rag/endpoint.py`, with their logic in `kiosk.py` and `printer.py`:
 
-- **Corpus** — `data/anagrafe.py` exports `docs`, a Python list of service dicts (description, needed_docs, regulations with articles). It is the single source of truth; there is no other ingestion step.
-- **Indexing** (`vectorize.py`) — Runs heavy work at import: loads the `intfloat/multilingual-e5-base` embedder (with `passage: `/`query: ` prefixes), opens the persistent Chroma DB at `src/chromadb/` (collection `comune_roma`), and auto-drops/rebuilds it when the fingerprint (hash of `INDEX_VERSION`, chunking params, embedding model and the whole `docs` payload) changes. So editing `data/anagrafe.py` triggers a reindex automatically; bump `INDEX_VERSION` when changing chunking/document-building logic that the fingerprint does not capture. Services are chunked by words with section headings; each regulation article becomes its own document.
-- **Retrieval** (`query_collection`) — hybrid: translate the question to Italian once (`translate.py`), fall back to `_EN_IT_GLOSSARY`/`_IT_MULTILINGUAL_GLOSSARY` terms; exact regulation lookup from regex-extracted references (e.g. "D.L. 5/2012", from both original and Italian text) gets a reserved quota (`REGULATION_QUOTA`); dense Chroma search + in-memory BM25 (`_BM25Index`, uses original + Italian tokens) are fused with RRF, deduped, then reranked by a sentence-transformers cross-encoder with score thresholds. Returns `(documents, metadatas)`; empty result → `NO_INFORMATION_ANSWER` without calling the model.
-- **Generation** (`llm.py`) — `create_client()` / `create_fallback_client()` build primary and fallback OpenAI clients depending on env; `ask()` tries primary then fallback, with retry + exponential backoff and jitter on retryable statuses (408/409/429/5xx/timeouts) and raises `ModelUnavailableError` when all fail (API maps it to HTTP 502). Local models use a compact prompt (`LOCAL_SYSTEM_PROMPT`, fewer documents, no JSON metadata). The model is instructed to answer in the user's language; model answers are not translated. Only the fixed `NO_INFORMATION_ANSWER` is translated into the question's language via `translate.localize()` (API and REPL); Italian questions are detected by `translate_to_italian()` returning `None`, not by language detection.
-- **Translation** (`translate.py`) — optional LibreTranslate client using stdlib `urllib`; detects language, translates directly to `it` or pivots via `en`; LRU-style cache plus a circuit breaker (opens after N consecutive failures for a cooldown). Disabled when `LIBRETRANSLATE_URL` is empty. `start_libretranslate.py` is used by the API lifespan to auto-launch LibreTranslate via `uvx` when the URL is local (it defaults to localhost even if unset — a known inconsistency). Never `uv add libretranslate` (pulls ~170 packages and downgrades numpy/requests); `scripts/install_libretranslate_models.py` preinstalls the needed Argos models via `uv run --with libretranslate`.
+| Endpoint | Contract |
+| --- | --- |
+| `POST /api/chat/stream` | `{message, language, service, session_id}` → NDJSON lines `{type: "token", text}`, `{type: "sources", sources, forms}`, `{type: "done"}` or `{type: "error", message}`. The answer is sent as a single `token` event (no token-level streaming). History and follow-up handling are kept in memory per `session_id` (`kiosk.SessionStore`), mirroring the REPL. `service` is accepted but unused (the corpus covers only anagrafe). |
+| `GET /api/embeddable?url=` | `{embeddable: bool}` from `X-Frame-Options` / CSP `frame-ancestors`. |
+| `GET /api/pdf?url=` | Proxies an external PDF (≤15 MB, must start with `%PDF`). |
+| `POST /api/print` | `{pages: [dataURL…]}` → 204, or 503 if the printer is unreachable. ESC/POS raster (`GS v 0`) over the Bluetooth serial port of the Phomemo A282M. |
+| `GET /documents/<file>` | Corpus files from `backend/data/docs/` (`DOCUMENTS_DIR`). Each page source gets `url` = original portal page and `copy` = its saved Markdown here (shown when the portal refuses frames); `forms` are the page's linked PDFs (`forms` in `data/sources.json`) served locally, so the viewer can render and print them without `/api/pdf`. |
+| `POST /api/conversation/pdf` | `{messages: [{role, content}…]}` → PDF for the office operator: user's language on the left, Italian translation (done by the chat model, one call per conversation) on the right. Used by the chat's "Stampa conversazione" button, which renders the pages with pdf.js (`renderPdfData`) and sends them to `/api/print`. |
+| `POST /api/chat`, `GET /api/health` | Older stateless endpoints, not used by the frontend. |
 
-### Import quirks
+`/api/embeddable` and `/api/pdf` fetch arbitrary URLs on behalf of the browser, so `kiosk.check_public_url` rejects non-http(s) schemes and non-public IPs (redirects included). Keep that check on any new server-side fetch.
 
-Modules support both package imports (`from .llm import ...`) and flat imports (`import llm`) via `try/except ImportError`. `tests/conftest.py` puts `src/rag` on `sys.path`, so tests import modules flat (`import llm`, `import translate`). Preserve this dual-import pattern when adding modules that the REPL or tests import. `vectorize.py` adds the project root to `sys.path` so `data.anagrafe` resolves.
+## Frontend architecture
 
-The HTTP API is stateless (no conversation history); only the REPL keeps history and "remembers" the last retrieved services for follow-up questions.
+- **No router**: `app.routes.ts` is empty. Navigation is a step state machine in `AppStateService` (`currentStep` signal: `welcome → language → choice → services → chatbot | webapp`), together with `selectedLanguage`, `activeService` (`anagrafica` | `affitto`), `chatMessages` and a per-session `sessionId`. Components render based on these signals.
+- **i18n**: not Angular i18n. All UI strings live in `src/assets/translation.json` (key → language → text), loaded at startup and read via `state.t(key)`. Arabic switches the layout to RTL via `state.dir()`.
+- **Web app (`public/webapp/`)**: a separate vanilla-JS site (offices/CAF map, own `i18n.js`, `accessibility.js`) served as a static asset and embedded in an iframe by `webapp.component`. It talks to the Angular shell via `postMessage` (`tramite:back`, `tramite:lang`, `tramite:open`). Its office data is pre-downloaded from OpenStreetMap by `public/webapp/scripts/aggiorna-dati.mjs` into `dati/sedi-precaricate.js`.
+- **Link viewer**: the kiosk has no tabs or browser chrome, so external links/sources open in an in-app viewer (`link-viewer.component`, `pdf-pages.ts` using `pdfjs-dist`), with a saved text copy as fallback when a site can't be embedded. Printing goes through the backend, never the browser print dialog.
+- **Virtual keyboard**: `simple-keyboard` with per-language layouts, plus a custom Pinyin IME for Chinese (`pinyin-ime.ts`, dictionary `public/ime/zh-pinyin.txt` generated by `scripts/build-pinyin-dict.mjs`).
+- **Accessibility**: `AccessibilityService` + `accessibility.css` (incl. OpenDyslexic font). `storage.ts` wraps `localStorage` in try/catch — use it instead of `localStorage` directly.
+- Production budgets in `angular.json` are tight (component styles warn at 4kB, error at 8kB).

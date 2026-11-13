@@ -1,0 +1,196 @@
+
+/* The keyboard is 65% of its original size (--vk) and in px, so the text size
+   chosen in the accessibility panel does not change it. */
+.vk {
+  --vk: 0.65;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 150;
+  /* As wide as the keys plus a 1cm edge on the left and on the right. */
+  box-sizing: border-box;
+  width: min(100%, calc(1100px * var(--vk) + 2cm));
+  margin-inline: auto;
+  padding: calc(12px * var(--vk)) 1cm calc(16px * var(--vk));
+  font-size: 16px;
+  background: var(--c-surface-alt);
+  border: var(--border-w) solid var(--c-border);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 24px rgba(23, 50, 77, 0.12);
+  animation: vk-in 0.2s ease;
+}
+
+@keyframes vk-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.vk-inner {
+  max-width: calc(1100px * var(--vk));
+  margin: 0 auto;
+}
+
+.vk .simple-keyboard {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: visible;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: inherit;
+}
+
+.vk .hg-rows {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--vk));
+}
+
+.vk .hg-row {
+  display: flex;
+  gap: calc(6px * var(--vk));
+}
+
+.vk .hg-row .hg-button-container {
+  display: flex;
+  gap: calc(6px * var(--vk));
+}
+
+.vk .hg-button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  height: calc(54px * var(--vk));
+  padding: 0 calc(4px * var(--vk));
+  border: var(--border-w) solid var(--c-border);
+  border-radius: calc(10px * var(--vk));
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: calc(20px * var(--vk));
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--c-border);
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vk .hg-button span {
+  pointer-events: none;
+}
+
+.vk .hg-button.hg-activeButton {
+  background: var(--c-primary-soft);
+  border-color: var(--c-primary);
+}
+
+.vk .hg-button.hg-functionBtn {
+  background: var(--c-soft);
+  font-size: calc(17.6px * var(--vk));
+}
+
+.vk .hg-button[data-skbtn="{bksp}"],
+.vk .hg-button[data-skbtn="{shift}"],
+.vk .hg-button[data-skbtn="{lock}"],
+.vk .hg-button[data-skbtn="{enter}"] {
+  flex-grow: 1.5;
+}
+
+.vk .hg-button[data-skbtn="{space}"] {
+  flex-grow: 6;
+  background: var(--c-surface);
+}
+
+.vk .hg-button[data-skbtn="{enter}"] {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: calc(24px * var(--vk));
+}
+
+.vk .hg-button[data-skbtn="{close}"],
+.vk .hg-button[data-skbtn="{abc}"] {
+  flex-grow: 1.5;
+}
+
+.vk .hg-button[data-skbtn="{abc}"] {
+  color: var(--c-primary);
+  font-weight: 800;
+}
+
+.vk .hg-button.vk-on {
+  background: var(--c-primary);
+  border: 3px solid var(--c-text);
+  color: var(--c-on-primary);
+}
+
+.vk .hg-button[data-skbtn="‌"],
+.vk .hg-button[data-skbtn="‍"] {
+  font-size: calc(12px * var(--vk));
+}
+
+.vk-ime {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--vk));
+  margin-bottom: calc(10px * var(--vk));
+  padding: calc(6px * var(--vk)) calc(8px * var(--vk));
+  background: var(--c-surface);
+  border: var(--border-w) solid var(--c-primary);
+  border-radius: calc(12px * var(--vk));
+}
+
+.vk-ime-pinyin {
+  flex-shrink: 0;
+  padding: 0 calc(8px * var(--vk));
+  color: var(--c-primary);
+  font-size: calc(17.6px * var(--vk));
+  font-weight: 700;
+  border-bottom: 2px solid currentColor;
+}
+
+.vk-ime-list {
+  display: flex;
+  flex: 1;
+  gap: calc(6px * var(--vk));
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.vk-ime-candidate {
+  flex-shrink: 0;
+  min-width: calc(56px * var(--vk));
+  height: calc(52px * var(--vk));
+  padding: 0 calc(14px * var(--vk));
+  border: 0;
+  border-radius: calc(10px * var(--vk));
+  background: transparent;
+  color: var(--c-text);
+  font-size: calc(24px * var(--vk));
+  cursor: pointer;
+}
+
+.vk-ime-candidate:first-child {
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-weight: 700;
+}
+
+.vk-ime-candidate:active {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.vk-ime-empty {
+  padding: 0 calc(8px * var(--vk));
+  color: var(--c-muted-2);
+  font-size: calc(20px * var(--vk));
+}

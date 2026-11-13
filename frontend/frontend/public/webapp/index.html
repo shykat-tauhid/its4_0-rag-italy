@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Servizi al Cittadino – Carta d'Identità e CAF in Italia</title>
+<meta name="description" content="Trova anagrafi, CAF e patronati vicino a te: orari, contatti, cosa portare e come arrivare.">
+<link rel="preconnect" href="https://overpass-api.de" crossorigin>
+<link rel="preconnect" href="https://overpass.kumi.systems" crossorigin>
+<link rel="preconnect" href="https://nominatim.openstreetmap.org" crossorigin>
+<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
+<link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<!-- Same icon set as the totem (accessibility button) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="accessibility.css">
+<!-- Lingua scelta sul totem (?lang=…): va caricata prima di tutto il resto -->
+<script src="i18n.js"></script>
+<!-- Nell'<head>: applica subito le preferenze salvate (niente "lampo" di colori sbagliati) -->
+<script src="accessibility.js"></script>
+</head>
+<body>
+<a class="skip" href="#ricerca" data-i18n="skip">Salta al modulo di ricerca</a>
+
+<header>
+<!-- Tricolore -->
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- Intestazione -->
+<div class="site-head">
+  <div class="wrap site-head__in">
+    <div class="site-head__start">
+      <!-- Solo dentro il totem (?embed=1): torna alla scelta tra assistente e ricerca uffici -->
+      <button type="button" class="back-btn" id="btnTotem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        <span data-i18n="back">Indietro</span>
+      </button>
+      <a class="brand" href="#cerca">
+        <span class="brand__logo" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 21h18M5 21V10M19 21V10M9.5 21v-6h5v6M12 3 3 8.5h18z"/></svg></span>
+        <span class="brand__txt"><span class="brand__name" data-i18n="brandName">Servizi al Cittadino</span><span class="brand__sub" data-i18n="brandSub">Trova anagrafi e CAF vicino a te</span><span class="brand__note" data-i18n="utilTxt">Servizio informativo gratuito · Anagrafi e CAF in Italia</span></span>
+      </a>
+    </div>
+    <!-- Link veri (#…): funzionano il tasto "indietro" del browser e l'apertura in una nuova scheda -->
+    <nav class="mainnav" aria-label="Menu principale" data-i18n-attr="aria-label:navLabel">
+      <a href="#cerca" data-view="servizi" aria-current="page" data-i18n="navSearch">Cerca un ufficio</a>
+      <a href="#come-funziona" data-view="come" data-i18n="navHow">Come funziona</a>
+      <a href="#domande" data-view="faq" data-i18n="navFaq">Domande frequenti</a>
+    </nav>
+  </div>
+</div>
+</header>
+
+<main>
+<!-- ================= VISTA: RICERCA ================= -->
+<div id="view-servizi">
+  <div class="hero">
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <h1 data-i18n="heroTitle">Trova l’ufficio giusto, vicino a te</h1>
+        <p data-i18n="heroText">Scegli cosa ti serve e dove ti trovi: ti mostriamo gli uffici aperti, gli orari e come arrivarci.</p>
+        <ul class="hero__trust" aria-label="In breve" data-i18n-attr="aria-label:trustLabel">
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg><span data-i18n="trustFree">Servizio gratuito</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="trustHours">Orari e indicazioni</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-i18n="trustPrivacy">Posizione non conservata</span></li>
+        </ul>
+      </div>
+
+      <!-- Illustrazione decorativa: nascosta agli screen reader, non contiene informazioni -->
+      <div class="hero__art" id="heroArt" aria-hidden="true">
+        <span class="art__ring art__ring--3"></span><span class="art__ring art__ring--2"></span><span class="art__ring art__ring--1"></span>
+        <div class="art__doc"><i></i><i></i><i></i><i></i>
+          <b><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 7"/></svg></b>
+        </div>
+        <div class="idcard">
+          <span class="idcard__rosette"></span>
+          <span class="idcard__flag"><i></i><i></i><i></i></span>
+          <span class="idcard__title"><i></i><i></i></span>
+          <span class="idcard__chip"></span>
+          <span class="idcard__photo"><svg viewBox="0 0 80 80" fill="currentColor"><circle cx="40" cy="28" r="14"/><path d="M8 80c2-20 14-30 32-30s30 10 32 30z"/></svg></span>
+          <span class="idcard__lines"><i></i><i></i><i></i><i></i></span>
+          <span class="idcard__holo"></span>
+        </div>
+        <div class="art__pin"><svg viewBox="0 0 70 92"><defs><linearGradient id="pinG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9FC0FF"/></linearGradient></defs><path d="M35 90S6 58 6 33C6 16 19 3 35 3s29 13 29 30c0 25-29 57-29 57z" fill="url(#pinG)"/><circle cx="35" cy="33" r="12" fill="#1750C8"/></svg></div>
+        <div class="art__chip" data-i18n="openNow">Aperto adesso</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <form class="search" id="ricerca" tabindex="-1" novalidate aria-label="Ricerca uffici" data-i18n-attr="aria-label:formLabel">
+
+      <!-- Servizio: radio veri (frecce della tastiera e annunci gratis dal browser) -->
+      <fieldset class="svc">
+        <legend class="sr-only" data-i18n="needLegend">Cosa ti serve?</legend>
+        <label class="choice">
+          <input type="radio" name="servizio" value="carta_identita" checked>
+          <span class="choice__ico" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.6-1.6 4.4-1.6 5 0M14 10h4M14 14h4"/></svg></span>
+          <span class="choice__txt">
+            <span class="choice__t"><span data-i18n="svcId">Carta d’identità</span> <span class="cnt" id="cnt-carta_identita"></span></span>
+            <span class="choice__d" data-i18n="svcIdDesc">Richiesta o rinnovo, all’anagrafe del Comune</span>
+          </span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="servizio" value="caf">
+          <span class="choice__ico" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6"/></svg></span>
+          <span class="choice__txt">
+            <span class="choice__t"><span data-i18n="svcCaf">CAF e Patronati</span> <span class="cnt" id="cnt-caf"></span></span>
+            <span class="choice__d" data-i18n="svcCafDesc">Modello 730, ISEE, pensioni e pratiche fiscali</span>
+          </span>
+        </label>
+      </fieldset>
+
+      <!-- Zona, raggio e invio sulla stessa riga -->
+      <div class="query">
+        <div class="field field--where">
+          <label for="citta" class="field__label" data-i18n="whereLabel">Dove ti trovi?</label>
+          <div class="where">
+            <input type="search" id="citta" placeholder="Città o indirizzo" data-i18n-attr="placeholder:wherePh" autocomplete="off" enterkeyhint="search" aria-describedby="cittaHint cittaErr">
+            <button type="button" class="geo" id="btnGeo" title="Usa la mia posizione" data-i18n-attr="title:useLocation">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              <span data-i18n="useLocation">Usa la mia posizione</span>
+            </button>
+          </div>
+        </div>
+
+        <fieldset class="dist">
+          <legend class="field__label" data-i18n="radius">Raggio di ricerca</legend>
+          <div class="pills" id="raggio">
+            <label class="pill"><input type="radio" name="raggio" value="1" checked><span>1 km</span></label>
+            <label class="pill"><input type="radio" name="raggio" value="3"><span>3 km</span></label>
+            <label class="pill"><input type="radio" name="raggio" value="5"><span>5 km</span></label>
+            <label class="pill"><input type="radio" name="raggio" value="10"><span>10 km</span></label>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn--primary btn--xl" id="btnCerca">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span data-i18n="showOffices">Mostra gli uffici</span>
+        </button>
+      </div>
+
+      <p class="field__help" id="cittaHint" data-i18n="whereHelp">Per esempio: Milano, oppure Via Roma 10, Napoli. Se usi la tua posizione, non viene conservata.</p>
+      <p class="field__err" id="cittaErr" hidden></p>
+
+      <!-- Avvisi (posizione non trovata, server lenti, errori). Popolato da app.js -->
+      <div class="notice" id="notice" hidden>
+        <svg class="notice__ico" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <span id="noticeTxt"></span>
+      </div>
+    </form>
+
+    <!-- 3. Risultati -->
+    <section class="results" id="risultati" tabindex="-1" aria-labelledby="titolo">
+      <div class="results__head">
+        <div>
+          <div class="step__small"><span class="step__n" aria-hidden="true">3</span><span data-i18n="chooseOffice">Scegli l’ufficio</span></div>
+          <h2 id="titolo" data-i18n="searching">Ricerca in corso…</h2>
+          <p class="results__sub" id="conteggio"></p>
+        </div>
+        <div class="segmented" role="group" aria-label="Filtra i risultati" data-i18n-attr="aria-label:filterLabel">
+          <button type="button" data-filtro="tutti" aria-pressed="true"><svg class="seg__ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span data-i18n="filterAll">Tutti gli uffici</span></button>
+          <button type="button" data-filtro="aperti" aria-pressed="false"><svg class="seg__ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span data-i18n="filterOpen">Solo aperti adesso</span></button>
+        </div>
+      </div>
+
+      <!-- Annunci per lo screen reader: solo messaggi significativi, mai un contatore che cambia ogni secondo -->
+      <div class="sr-only" id="statusSr" role="status" aria-live="polite"></div>
+
+      <div class="results__grid">
+        <div class="list" id="grid" aria-busy="true"></div>
+
+        <div class="mapcol" id="mappa">
+          <a class="skip-inline" href="#dopo-mappa" data-i18n="skipMap">Salta la mappa</a>
+          <div class="mapbox">
+            <div class="maptools"><button class="btn btn--float" id="btnArea" type="button" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+              <span data-i18n="searchArea">Cerca in quest’area</span></button></div>
+            <div id="map" role="region" aria-label="Mappa degli uffici" data-i18n-attr="aria-label:mapLabel" aria-describedby="mapDesc"></div>
+            <p class="sr-only" id="mapDesc" data-i18n="mapDesc">Mappa interattiva. Gli stessi uffici sono descritti nell’elenco dei risultati.</p>
+          </div>
+          <ul class="legend" aria-label="Legenda della mappa" data-i18n-attr="aria-label:legendLabel">
+            <li><span class="lg lg--open" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span><span data-i18n="openNow">Aperto adesso</span></li>
+            <li><span class="lg lg--closed" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span data-i18n="closedNow">Chiuso adesso</span></li>
+            <li><span class="lg lg--nd" aria-hidden="true">?</span><span data-i18n="noHours">Orari non disponibili</span></li>
+            <li><span class="lg lg--center" aria-hidden="true"></span><span data-i18n="searchedPoint">Punto cercato</span></li>
+          </ul>
+          <span id="dopo-mappa" tabindex="-1"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ================= VISTA: COME FUNZIONA ================= -->
+<div id="view-come" class="page" hidden>
+  <div class="hero hero--small"><div class="wrap"><h1 tabindex="-1" data-i18n="navHow">Come funziona</h1><p data-i18n="howSub">Tre passaggi per trovare l’ufficio che ti serve.</p></div></div>
+  <div class="wrap page__body">
+    <ol class="howto">
+      <li><span class="step__n" aria-hidden="true">1</span><div><h2 data-i18n="how1t">Scegli il servizio</h2><p data-i18n="how1p">“Carta d’identità” mostra i Comuni e gli uffici anagrafe. “CAF e Patronati” mostra i centri di assistenza fiscale e i patronati sindacali.</p></div></li>
+      <li><span class="step__n" aria-hidden="true">2</span><div><h2 data-i18n="how2t">Indica dove ti trovi</h2><p data-i18n="how2p">Scrivi una città o un indirizzo, oppure usa la tua posizione. Poi scegli quanto lontano puoi andare: 1, 3, 5 o 10 km.</p></div></li>
+      <li><span class="step__n" aria-hidden="true">3</span><div><h2 data-i18n="how3t">Scegli l’ufficio</h2><p data-i18n="how3p">Gli uffici sono ordinati dal più vicino. Per ognuno vedi se è aperto adesso, gli orari, cosa portare e come arrivarci.</p></div></li>
+    </ol>
+    <h2 data-i18n="symbolsTitle">Cosa significano i simboli</h2>
+    <ul class="legend legend--big">
+      <li><span class="lg lg--open" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M5 12l5 5L20 7"/></svg></span><span data-i18n="symOpen">Aperto adesso, secondo gli orari pubblicati</span></li>
+      <li><span class="lg lg--closed" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M6 6l12 12M18 6 6 18"/></svg></span><span data-i18n="symClosed">Chiuso in questo momento</span></li>
+      <li><span class="lg lg--nd" aria-hidden="true">?</span><span data-i18n="symNd">Gli orari non sono indicati: chiama o controlla il sito dell’ente</span></li>
+    </ul>
+    <p><a href="#cerca" class="btn btn--primary" data-i18n="startSearch">Inizia la ricerca</a></p>
+  </div>
+</div>
+
+<!-- ================= VISTA: DOMANDE FREQUENTI ================= -->
+<div id="view-faq" class="page" hidden>
+  <div class="hero hero--small"><div class="wrap"><h1 tabindex="-1" data-i18n="navFaq">Domande frequenti</h1></div></div>
+  <div class="wrap page__body faq">
+    <details><summary data-i18n="faq1q">Da dove vengono i dati?</summary><p data-i18n="faq1a">Da OpenStreetMap, la mappa libera costruita da volontari. Per questo alcuni uffici potrebbero mancare o avere informazioni vecchie.</p></details>
+    <details><summary data-i18n="faq2q">Non trovo il mio ufficio: perché?</summary><p data-i18n="faq2a">Può non essere ancora inserito su OpenStreetMap. Prova ad aumentare la distanza o a cercare un indirizzo più preciso. Se conosci l’ufficio puoi aggiungerlo tu stesso su openstreetmap.org.</p></details>
+    <details><summary data-i18n="faq3q">Gli orari sono sempre giusti?</summary><p data-i18n="faq3a">No: sono quelli pubblicati su OpenStreetMap e possono cambiare, anche nei giorni festivi. Prima di andare controlla sempre sul sito ufficiale dell’ente o chiama.</p></details>
+    <details><summary data-i18n="faq4q">Serve prenotare?</summary><p data-i18n="faq4a">Spesso sì, soprattutto per la carta d’identità elettronica. Molti Comuni usano l’agenda del Ministero dell’Interno; altri hanno un sistema proprio. Controlla sul sito del tuo Comune.</p></details>
+    <details><summary data-i18n="faq5q">Cosa succede alla mia posizione?</summary><p data-i18n="faq5a">Viene usata solo per cercare gli uffici vicini: le coordinate sono inviate ai server di OpenStreetMap per la ricerca. Questo sito non le conserva; i risultati restano salvati per qualche ora solo nel tuo browser, per rendere la ricerca più veloce.</p></details>
+  </div>
+</div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap site-foot__grid">
+    <div>
+      <p class="site-foot__name" data-i18n="brandName">Servizi al Cittadino</p>
+      <p class="site-foot__muted" data-i18n="footDesc">Un aiuto gratuito per trovare anagrafi, CAF e patronati in Italia.</p>
+    </div>
+    <nav aria-label="Informazioni" data-i18n-attr="aria-label:footInfo">
+      <p class="site-foot__h" data-i18n="footInfo">Informazioni</p>
+      <ul>
+        <li><a href="#come-funziona" data-i18n="navHow">Come funziona</a></li>
+        <li><a href="#domande" data-i18n="navFaq">Domande frequenti</a></li>
+      </ul>
+    </nav>
+    <div>
+      <p class="site-foot__h" data-i18n="footData">Da dove vengono i dati</p>
+      <p class="site-foot__muted" data-i18n="footDataTxt">Dati © contributori di OpenStreetMap. Possono essere incompleti: verifica sempre orari e prenotazioni sul sito ufficiale dell’ente.</p>
+      <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener noreferrer"><span data-i18n="reportError">Segnala un dato sbagliato</span><span class="sr-only" data-i18n="newTab"> (si apre in una nuova scheda)</span></a>
+    </div>
+  </div>
+</footer>
+
+<!-- Solo dentro il totem (?embed=1): apre la scelta della lingua del totem. Uguale al pulsante del totem. -->
+<button type="button" class="lang-switch" id="btnLang" data-i18n-attr="aria-label:changeLang;title:changeLang">
+  <span class="lang-switch-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="dati/sedi-precaricate.js"></script>
+<script src="app.js"></script>
+<script src="wow.js" defer></script>
+</body>
+</html>

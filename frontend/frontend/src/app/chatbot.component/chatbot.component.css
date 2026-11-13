@@ -1,0 +1,357 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/* The chat fills the height of the screen, with a small margin (--chat-gap) above and below.
+   It starts below the back and language buttons (--chat-top), or level with them on wide
+   screens, where it sits between them. When the keyboard is open it ends just above it. */
+.page {
+  --chat-gap: 24px;
+  --chat-top: calc(64px + 2 * var(--chat-gap));
+  justify-content: flex-start;
+  padding-top: var(--chat-top);
+  padding-bottom: var(--chat-gap);
+}
+
+@media (min-width: 1280px) {
+  .page {
+    --chat-top: var(--chat-gap);
+  }
+}
+
+.page.kb-open {
+  padding-bottom: calc(var(--kb-h, 220px) + var(--chat-gap));
+}
+
+.chat-layout {
+  display: flex;
+  justify-content: center;
+  gap: var(--chat-gap);
+  width: 100%;
+  box-sizing: border-box;
+  height: calc(100vh - var(--chat-top) - var(--chat-gap));
+  height: calc(100dvh - var(--chat-top) - var(--chat-gap));
+  min-height: 360px;
+}
+
+.page.kb-open .chat-layout {
+  height: calc(100vh - var(--kb-h, 220px) - var(--chat-top) - var(--chat-gap));
+  height: calc(100dvh - var(--kb-h, 220px) - var(--chat-top) - var(--chat-gap));
+  min-height: 220px;
+}
+
+/* A file or a source is open: chat and viewer share the screen, half each. Both start below
+   the back and language buttons and keep clear of the language and accessibility buttons. */
+.page.split {
+  --chat-top: calc(64px + 2 * var(--chat-gap));
+}
+
+.page.split .chat-layout {
+  padding-inline-end: calc(64px + var(--chat-gap));
+}
+
+.page.split .chatbot-container,
+.chat-viewer {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+}
+
+.chatbot-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border-radius: 24px;
+  border: var(--border-w) solid var(--c-border);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: rise 0.85s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+/* The Tramite logo, centred, above the name of the service. */
+.chat-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 26px 18px;
+  background: var(--c-surface-alt);
+  border-bottom: var(--border-w) solid var(--c-line);
+}
+
+/* Navy letters on light surfaces, white ones on dark surfaces. */
+.brand {
+  display: block;
+  width: auto;
+  height: 48px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.brand-dark {
+  display: none;
+}
+
+:host-context([data-theme="dark"]) .brand-light,
+:host-context([data-cvd="contrast"]) .brand-light {
+  display: none;
+}
+
+:host-context([data-theme="dark"]) .brand-dark,
+:host-context([data-cvd="contrast"]) .brand-dark {
+  display: block;
+}
+
+.chat-header h1 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: var(--c-text-strong);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.chat-header h1 i {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 12px;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: 1.2rem;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border-hover) transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* A message and, for the assistant, its round avatar beside it, as in messaging apps. */
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 85%;
+}
+
+.message-row.bot {
+  align-self: flex-start;
+}
+
+.message-row.user {
+  align-self: flex-end;
+}
+
+.bot-avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #ffffff;
+  border: var(--border-w) solid var(--c-border);
+  box-shadow: 0 1px 2px rgba(7, 20, 45, 0.12), 0 6px 14px -8px rgba(7, 20, 45, 0.35);
+  overflow: hidden;
+}
+
+.bot-avatar img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+}
+
+.message-bubble {
+  min-width: 0;
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.message-bubble.bot {
+  background: var(--c-surface-alt);
+  color: var(--c-text);
+  border: var(--border-w) solid var(--c-line);
+  border-start-start-radius: 4px;
+}
+
+.message-bubble.user {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  border-end-end-radius: 4px;
+  box-shadow: 0 10px 20px -12px var(--glow);
+}
+
+:host-context([data-cvd="contrast"]) .message-bubble.bot {
+  border-color: var(--c-border);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  animation: blink 1.2s infinite ease-in-out;
+}
+
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 12px;
+  padding: 18px 22px;
+  border-top: var(--border-w) solid var(--c-line);
+  background: var(--c-surface);
+  align-items: center;
+}
+
+.chat-input-area input {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--c-border-hover);
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 1.05rem;
+  background: var(--c-surface-alt);
+  color: var(--c-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.chat-input-area input::placeholder {
+  color: var(--c-muted);
+}
+
+.chat-input-area input:focus {
+  border-color: var(--c-primary);
+  background: var(--c-surface);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-primary) 22%, transparent);
+}
+
+.chat-input-area input:focus-visible {
+  outline: none;
+}
+
+.chat-input-area button {
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  font-size: 1.2rem;
+  box-shadow: 0 1px 2px rgba(7, 20, 45, 0.25), 0 10px 20px -12px var(--glow);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chat-input-area button:hover:not(:disabled) {
+  background: var(--c-primary-hover);
+  transform: translateY(-1px);
+}
+
+.chat-input-area button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rtl .fa-paper-plane {
+  transform: scaleX(-1);
+}
+
+.message-text {
+  white-space: pre-wrap;
+}
+
+.message-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: var(--border-w) solid var(--c-line);
+}
+
+.links-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.form-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 2px solid color-mix(in srgb, var(--c-primary) 70%, transparent);
+  border-radius: 12px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.form-link:hover {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.source-link {
+  font-size: 0.95rem;
+  color: var(--c-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+span.source-link {
+  color: var(--c-muted);
+  text-decoration: none;
+}
+
+a.source-link:hover {
+  color: var(--c-primary-hover);
+  text-decoration-thickness: 2.5px;
+}

@@ -1,0 +1,330 @@
+/* =====================================================================
+   Accessibility: the same options and colours as the "Trova un ufficio" web app
+   (public/webapp/accessibility.css and style.css). The two share their preferences,
+   so a choice made on one is already applied on the other.
+   ===================================================================== */
+
+/* ---------- Colour palettes and dark theme ----------
+   Same values and same order as the web app, with its tokens renamed to the totem's
+   (--primary → --c-primary, --surface → --c-surface, --hd → --c-hd, …).
+   "Chiaro" is the totem's normal look, which matches the web app's light theme. */
+
+:root[data-theme="dark"] {
+  --c-bg-1: #060E1F;
+  --c-surface-alt: #060E1F;
+  --c-surface: #0E1A33;
+  --c-soft: #17284A;
+  --c-primary-soft: #14294D;
+  --c-text: #E9EFFA;
+  --c-muted: #A8B8D0;
+  --c-muted-2: #A8B8D0;
+  --c-text-strong: #F3F7FE;
+  --c-border: #243A62;
+  --c-border-hover: #36507F;
+  --c-line: #1D3158;
+  --c-primary: #6FB0FF;
+  --c-glow-1: #6FB0FF;
+  --c-primary-hover: #A4CDFF;
+  --c-on-primary: #04132B;
+  --c-accent: #6FB0FF;
+  --c-accent-soft: #14294D;
+  --c-hd: #040B1A;
+  --c-header-bg: #040B1A;
+  --c-hd-2: #0A1B3D;
+  --shadow-lg: 0 40px 80px -28px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.04);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3), 0 18px 36px -22px rgba(0,0,0,.7);
+  --shadow-md: 0 1px 2px rgba(0,0,0,.35), 0 28px 48px -22px rgba(0,0,0,.85);
+  --glow: color-mix(in srgb,var(--c-primary) 30%,transparent);
+}
+
+:root[data-cvd="deutan"] {
+  --c-primary: #0057b8;
+  --c-glow-1: #0057b8;
+  --c-primary-hover: #003f88;
+  --c-on-primary: #fff;
+  --c-accent: #7a5c00;
+  --c-accent-soft: #fff1c2;
+}
+
+:root[data-theme="dark"][data-cvd="deutan"] {
+  --c-primary: #56b4e9;
+  --c-glow-1: #56b4e9;
+  --c-primary-hover: #8ccdf2;
+  --c-on-primary: #04121f;
+  --c-accent: #f0c945;
+  --c-accent-soft: #3a3110;
+}
+
+:root[data-cvd="tritan"] {
+  --c-primary: #b8194a;
+  --c-glow-1: #b8194a;
+  --c-primary-hover: #8a1038;
+  --c-on-primary: #fff;
+  --c-accent: #1b7f4b;
+  --c-accent-soft: #dcf2e5;
+  --c-hd: #2a2f36;
+  --c-header-bg: #2a2f36;
+  --c-hd-2: #343a42;
+}
+
+:root[data-theme="dark"][data-cvd="tritan"] {
+  --c-primary: #ff7aa8;
+  --c-glow-1: #ff7aa8;
+  --c-primary-hover: #ffa3c3;
+  --c-on-primary: #2b0413;
+  --c-accent: #4fd18b;
+  --c-accent-soft: #123a26;
+  --c-hd: #14171b;
+  --c-header-bg: #14171b;
+  --c-hd-2: #1c2026;
+}
+
+:root[data-cvd="achro"] {
+  --c-bg-1: #f0f0f0;
+  --c-surface-alt: #f0f0f0;
+  --c-surface: #fff;
+  --c-text: #111;
+  --c-muted: #444;
+  --c-muted-2: #444;
+  --c-border: #6f6f6f;
+  --c-primary: #1a1a1a;
+  --c-glow-1: #1a1a1a;
+  --c-primary-hover: #000;
+  --c-on-primary: #fff;
+  --c-accent: #333;
+  --c-accent-soft: #e4e4e4;
+  --c-hd: #111;
+  --c-header-bg: #111;
+  --c-hd-2: #222;
+  --shadow-lg: 0 1px 3px rgba(0,0,0,.35);
+}
+
+:root[data-theme="dark"][data-cvd="achro"] {
+  --c-bg-1: #0d0d0d;
+  --c-surface-alt: #0d0d0d;
+  --c-surface: #1b1b1b;
+  --c-text: #f2f2f2;
+  --c-muted: #cfcfcf;
+  --c-muted-2: #cfcfcf;
+  --c-border: #8c8c8c;
+  --c-primary: #f2f2f2;
+  --c-glow-1: #f2f2f2;
+  --c-primary-hover: #fff;
+  --c-on-primary: #111;
+  --c-accent: #ddd;
+  --c-accent-soft: #333;
+  --c-hd: #000;
+  --c-header-bg: #000;
+  --c-hd-2: #111;
+  --shadow-lg: none;
+}
+
+:root[data-cvd="contrast"],
+:root[data-theme="dark"][data-cvd="contrast"] {
+  --c-bg-1: #000;
+  --c-surface-alt: #000;
+  --c-surface: #000;
+  --c-text: #fff;
+  --c-muted: #eee;
+  --c-muted-2: #eee;
+  --c-border: #fff;
+  --c-primary: #ffd400;
+  --c-glow-1: #ffd400;
+  --c-primary-hover: #fff;
+  --c-on-primary: #000;
+  --c-accent: #00e5ff;
+  --c-accent-soft: #00232a;
+  --c-hd: #000;
+  --c-header-bg: #000;
+  --c-hd-2: #000;
+  --shadow-lg: none;
+}
+
+:root[data-cvd="soft"] {
+  --c-bg-1: #f3f4f4;
+  --c-surface-alt: #f3f4f4;
+  --c-surface: #fdfdfd;
+  --c-text: #26323d;
+  --c-muted: #5f6b75;
+  --c-muted-2: #5f6b75;
+  --c-border: #d4d9dd;
+  --c-primary: #3d6b91;
+  --c-glow-1: #3d6b91;
+  --c-primary-hover: #2c5170;
+  --c-on-primary: #fff;
+  --c-accent: #4f7f70;
+  --c-accent-soft: #e4eeea;
+  --c-hd: #2b3f52;
+  --c-header-bg: #2b3f52;
+  --c-hd-2: #34495d;
+  --shadow-lg: 0 1px 3px rgba(30,45,60,.08),0 6px 18px rgba(30,45,60,.06);
+}
+
+:root[data-theme="dark"][data-cvd="soft"] {
+  --c-bg-1: #14191e;
+  --c-surface-alt: #14191e;
+  --c-surface: #1d242b;
+  --c-text: #dde3e8;
+  --c-muted: #9aa6b0;
+  --c-muted-2: #9aa6b0;
+  --c-border: #34414c;
+  --c-primary: #7fa6c7;
+  --c-glow-1: #7fa6c7;
+  --c-primary-hover: #a3c0d9;
+  --c-on-primary: #0d1720;
+  --c-accent: #86b3a3;
+  --c-accent-soft: #22332d;
+  --c-hd: #1a2733;
+  --c-header-bg: #1a2733;
+  --c-hd-2: #22323f;
+  --shadow-lg: none;
+}
+
+:root[data-cvd="achro"] {
+  --c-text-strong: #111;
+  --c-primary-soft: #e4e4e4;
+  --c-soft: #e0e0e0;
+  --c-line: #bbb;
+  --c-border-hover: #6f6f6f;
+}
+
+:root[data-theme="dark"][data-cvd="achro"] {
+  --c-text-strong: #fff;
+  --c-primary-soft: #2a2a2a;
+  --c-soft: #2a2a2a;
+  --c-line: #444;
+  --c-border-hover: #8c8c8c;
+}
+
+:root[data-cvd="contrast"],
+:root[data-theme="dark"][data-cvd="contrast"] {
+  --c-text-strong: #fff;
+  --c-primary-soft: #1f1a00;
+  --c-soft: #1a1a1a;
+  --c-line: #fff;
+  --c-border-hover: #fff;
+}
+
+:root[data-cvd="soft"] {
+  --c-text-strong: #26323d;
+  --c-primary-soft: #e6edf2;
+}
+
+:root[data-theme="dark"][data-cvd="soft"] {
+  --c-text-strong: #e6ecf0;
+  --c-primary-soft: #22303b;
+  --c-soft: #26313b;
+}
+
+/* ---------- Totem-only colours (the dark blue page and what sits on it) ---------- */
+:root[data-theme="dark"] {
+  --c-dark-accent: #6fb0ff;
+  --c-title-border: #243a62;
+  --c-backdrop: rgba(0, 0, 0, 0.6);
+}
+
+:root[data-cvd="deutan"] {
+  --border-w: 2px;
+  --c-dark-accent: #56b4e9;
+  --c-dark-card-selected: rgba(86, 180, 233, 0.2);
+}
+
+:root[data-cvd="tritan"] {
+  --border-w: 2px;
+  --c-dark-accent: #ff7aa8;
+  --c-dark-card: rgba(42, 47, 54, 0.7);
+  --c-dark-border: rgba(255, 255, 255, 0.24);
+  --c-dark-card-selected: rgba(255, 122, 168, 0.18);
+}
+
+:root[data-cvd="achro"] {
+  --border-w: 2px;
+  --c-dark-accent: #e0e0e0;
+  --c-on-dark-muted: #d6d6d6;
+  --c-dark-card: rgba(255, 255, 255, 0.06);
+  --c-dark-border: rgba(255, 255, 255, 0.35);
+  --c-dark-card-selected: rgba(255, 255, 255, 0.16);
+  --c-glow-1: #6f6f6f;
+}
+
+:root[data-cvd="soft"] {
+  --c-dark-accent: #a3c0d9;
+  --c-dark-card-selected: rgba(127, 166, 199, 0.2);
+}
+
+:root[data-cvd="contrast"] {
+  --border-w: 2px;
+  --c-title-border: #ffffff;
+  --c-on-header-muted: #ffffff;
+  --guilloche-opacity: 0;
+  --c-glow-1: transparent;
+  --c-soft-hover: #333333;
+  --c-border-hover: #ffd400;
+  --c-focus: #00e5ff;
+  --c-backdrop: rgba(0, 0, 0, 0.85);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --c-on-dark: #ffffff;
+  --c-on-dark-muted: #ffffff;
+  --c-dark-card: #000000;
+  --c-dark-card-selected: #1f1a00;
+  --c-dark-border: #ffffff;
+  --c-dark-accent: #ffd400;
+  --c-glass-bg: #000000;
+  --c-glass-border: #ffffff;
+}
+
+/* ---------- Font ---------- */
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root[data-font="dyslexic"] {
+  --font-a11y: "OpenDyslexic", "Comic Sans MS", Verdana, sans-serif;
+}
+
+:root[data-font="hyper"] {
+  --font-a11y: "Atkinson Hyperlegible", Verdana, Arial, sans-serif;
+}
+
+/* Icons keep their own font. */
+:root:is([data-font="dyslexic"], [data-font="hyper"]) :is(body, body *):not(.fa-solid, .fa-regular, .fa-brands) {
+  font-family: var(--font-a11y) !important;
+}
+
+:root[data-font="dyslexic"] body {
+  font-size: 0.96rem;
+}
+
+/* ---------- Reading and motion ---------- */
+:root[data-spacing="1"] :is(body, body *) {
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.16em !important;
+  line-height: 1.75 !important;
+}
+
+:root[data-links="1"] a:not(.btn) {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+
+:root[data-motion="1"] *,
+:root[data-motion="1"] *::before,
+:root[data-motion="1"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}

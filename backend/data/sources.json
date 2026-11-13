@@ -1,0 +1,537 @@
+[
+  {
+    "id": "cie-informazioni",
+    "title": "Carta d'identità elettronica (CIE): informazioni generali",
+    "kind": "pagina",
+    "file": "cie-informazioni.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF141252",
+    "forms": [
+      "modulo-richiesta-cie"
+    ]
+  },
+  {
+    "id": "cie-costi",
+    "title": "Carta d'identità elettronica (CIE): costi",
+    "kind": "pagina",
+    "file": "cie-costi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF141252&pagina=5",
+    "forms": []
+  },
+  {
+    "id": "cie-servizi-online",
+    "title": "Accesso ai servizi online di Roma Capitale con la CIE",
+    "kind": "pagina",
+    "file": "cie-servizi-online.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF141252&pagina=8",
+    "forms": []
+  },
+  {
+    "id": "cie-maggiorenni",
+    "title": "Carta d'identità per maggiorenni: descrizione del servizio",
+    "kind": "pagina",
+    "file": "cie-maggiorenni.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126",
+    "forms": [
+      "modulo-richiesta-cie"
+    ]
+  },
+  {
+    "id": "cie-maggiorenni-destinatari",
+    "title": "Carta d'identità per maggiorenni: a chi è rivolta",
+    "kind": "pagina",
+    "file": "cie-maggiorenni-destinatari.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=3",
+    "forms": []
+  },
+  {
+    "id": "cie-maggiorenni-documentazione",
+    "title": "Carta d'identità per maggiorenni: documenti da presentare",
+    "kind": "pagina",
+    "file": "cie-maggiorenni-documentazione.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=4",
+    "forms": [
+      "modulo-richiesta-cie"
+    ]
+  },
+  {
+    "id": "cie-maggiorenni-tempi-costi",
+    "title": "Carta d'identità per maggiorenni: tempi e costi",
+    "kind": "pagina",
+    "file": "cie-maggiorenni-tempi-costi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=5",
+    "forms": []
+  },
+  {
+    "id": "cie-ricevuta",
+    "title": "Ricevuta della richiesta di CIE come documento di riconoscimento",
+    "kind": "pagina",
+    "file": "cie-ricevuta.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=7",
+    "forms": []
+  },
+  {
+    "id": "cie-agenda",
+    "title": "Prenotazione dell'appuntamento per la CIE con Agenda CIE",
+    "kind": "pagina",
+    "file": "cie-agenda.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=8",
+    "forms": []
+  },
+  {
+    "id": "cie-cartacea",
+    "title": "Carta d'identità cartacea (CIC)",
+    "kind": "pagina",
+    "file": "cie-cartacea.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=9",
+    "forms": []
+  },
+  {
+    "id": "cie-prenotazione-fuori-agenda",
+    "title": "Carta d'identità: prenotazione fuori da Agenda CIE",
+    "kind": "pagina",
+    "file": "cie-prenotazione-fuori-agenda.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=10",
+    "forms": []
+  },
+  {
+    "id": "cie-aire",
+    "title": "Carta d'identità elettronica per i cittadini italiani residenti all'estero (AIRE)",
+    "kind": "pagina",
+    "file": "cie-aire.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF36126&pagina=12",
+    "forms": []
+  },
+  {
+    "id": "cie-minorenni",
+    "title": "Carta d'identità per minorenni: descrizione e documenti",
+    "kind": "pagina",
+    "file": "cie-minorenni.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33590",
+    "forms": [
+      "modulo-assenso-genitore-cie",
+      "modulo-richiesta-cie"
+    ]
+  },
+  {
+    "id": "cie-minorenni-tempi-costi",
+    "title": "Carta d'identità per minorenni: tempi e costi",
+    "kind": "pagina",
+    "file": "cie-minorenni-tempi-costi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33590&pagina=3",
+    "forms": [
+      "modulo-assenso-genitore-cie",
+      "modulo-richiesta-cie"
+    ]
+  },
+  {
+    "id": "residenza",
+    "title": "Cambio di residenza o di abitazione: descrizione e destinatari",
+    "kind": "pagina",
+    "file": "residenza.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35641",
+    "forms": [
+      "modulo-dichiarazione-residenza"
+    ]
+  },
+  {
+    "id": "residenza-documentazione",
+    "title": "Cambio di residenza o di abitazione: documenti da presentare",
+    "kind": "pagina",
+    "file": "residenza-documentazione.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35641&pagina=3",
+    "forms": [
+      "modulo-dichiarazione-residenza"
+    ]
+  },
+  {
+    "id": "residenza-tempi-costi",
+    "title": "Cambio di residenza o di abitazione: tempi di risposta e costi",
+    "kind": "pagina",
+    "file": "residenza-tempi-costi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35641&pagina=4",
+    "forms": []
+  },
+  {
+    "id": "residenza-tari",
+    "title": "Tassa sui rifiuti (TARI) dopo il cambio di residenza o di abitazione",
+    "kind": "pagina",
+    "file": "residenza-tari.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35641&pagina=5",
+    "forms": []
+  },
+  {
+    "id": "residenza-online",
+    "title": "Cambio di residenza o di abitazione online sul portale di Roma Capitale",
+    "kind": "pagina",
+    "file": "residenza-online.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF879978",
+    "forms": []
+  },
+  {
+    "id": "iscrizione-extra-ue",
+    "title": "Iscrizione anagrafica dei cittadini extracomunitari (non UE)",
+    "kind": "pagina",
+    "file": "iscrizione-extra-ue.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33606",
+    "forms": [
+      "modulo-dichiarazione-residenza"
+    ]
+  },
+  {
+    "id": "iscrizione-ue",
+    "title": "Iscrizione anagrafica dei cittadini comunitari (UE)",
+    "kind": "pagina",
+    "file": "iscrizione-ue.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33606&pagina=2",
+    "forms": [
+      "modulo-dichiarazione-residenza",
+      "modulo-attestazione-soggiorno",
+      "modulo-attestazione-soggiorno-familiare"
+    ]
+  },
+  {
+    "id": "iscrizione-senza-dimora",
+    "title": "Iscrizione anagrafica delle persone senza fissa dimora",
+    "kind": "pagina",
+    "file": "iscrizione-senza-dimora.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33606&pagina=3",
+    "forms": [
+      "modulo-dichiarazione-residenza"
+    ]
+  },
+  {
+    "id": "iscrizione-come-presentare",
+    "title": "Iscrizione anagrafica: come presentare la richiesta",
+    "kind": "pagina",
+    "file": "iscrizione-come-presentare.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF33606&pagina=4",
+    "forms": [
+      "modulo-dichiarazione-residenza"
+    ]
+  },
+  {
+    "id": "variazioni-anagrafiche",
+    "title": "Variazioni anagrafiche",
+    "kind": "pagina",
+    "file": "variazioni-anagrafiche.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF77978",
+    "forms": []
+  },
+  {
+    "id": "certificati",
+    "title": "Certificati anagrafici e di stato civile: descrizione del servizio",
+    "kind": "pagina",
+    "file": "certificati.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138464",
+    "forms": [
+      "modulo-richiesta-certificati"
+    ]
+  },
+  {
+    "id": "certificati-procedure",
+    "title": "Certificati anagrafici e di stato civile: procedure di rilascio",
+    "kind": "pagina",
+    "file": "certificati-procedure.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138464&pagina=3",
+    "forms": [
+      "modulo-richiesta-certificati"
+    ]
+  },
+  {
+    "id": "certificati-costi",
+    "title": "Certificati anagrafici e di stato civile: costi allo sportello e via PEC",
+    "kind": "pagina",
+    "file": "certificati-costi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138464&pagina=4",
+    "forms": []
+  },
+  {
+    "id": "certificati-pagamento",
+    "title": "Certificati anagrafici e di stato civile: modalità di pagamento",
+    "kind": "pagina",
+    "file": "certificati-pagamento.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138464&pagina=5",
+    "forms": []
+  },
+  {
+    "id": "certificati-municipi",
+    "title": "Certificati anagrafici e di stato civile: rilascio presso i Municipi",
+    "kind": "pagina",
+    "file": "certificati-municipi.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138464&pagina=7",
+    "forms": [
+      "modulo-richiesta-certificati"
+    ]
+  },
+  {
+    "id": "certificati-online",
+    "title": "Certificati anagrafici e di stato civile online",
+    "kind": "pagina",
+    "file": "certificati-online.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF138579",
+    "forms": []
+  },
+  {
+    "id": "certificati-stato-civile",
+    "title": "Certificati di stato civile non rilasciati a vista",
+    "kind": "pagina",
+    "file": "certificati-stato-civile.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF40246",
+    "forms": [
+      "modulo-richiesta-certificati"
+    ]
+  },
+  {
+    "id": "aire-trasferimento",
+    "title": "AIRE: trasferimento all'AIRE di Roma da un altro comune italiano",
+    "kind": "pagina",
+    "file": "aire-trasferimento.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF141261",
+    "forms": []
+  },
+  {
+    "id": "aire-variazioni",
+    "title": "AIRE: variazioni anagrafiche",
+    "kind": "pagina",
+    "file": "aire-variazioni.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF141261&pagina=2",
+    "forms": []
+  },
+  {
+    "id": "autocertificazione",
+    "title": "Autocertificazione (dichiarazione sostitutiva di certificazione)",
+    "kind": "pagina",
+    "file": "autocertificazione.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35489",
+    "forms": [
+      "modulo-autocertificazione"
+    ]
+  },
+  {
+    "id": "dichiarazione-notorieta",
+    "title": "Dichiarazione sostitutiva di atto di notorietà",
+    "kind": "pagina",
+    "file": "dichiarazione-notorieta.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF35489&pagina=2",
+    "forms": [
+      "modulo-dichiarazione-notorieta"
+    ]
+  },
+  {
+    "id": "atti-esteri",
+    "title": "Atti di stato civile formati all'estero: che cosa sono",
+    "kind": "pagina",
+    "file": "atti-esteri.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF160849",
+    "forms": []
+  },
+  {
+    "id": "atti-esteri-informazioni",
+    "title": "Atti di stato civile formati all'estero: ulteriori informazioni",
+    "kind": "pagina",
+    "file": "atti-esteri-informazioni.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF160849&pagina=2",
+    "forms": []
+  },
+  {
+    "id": "trascrizione-nascita-estero",
+    "title": "Trascrizione degli atti di nascita avvenuti all'estero",
+    "kind": "pagina",
+    "file": "trascrizione-nascita-estero.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF160849&pagina=4",
+    "forms": [
+      "modulo-trascrizione-nascita-estero"
+    ]
+  },
+  {
+    "id": "trascrizione-matrimonio-estero-italiani",
+    "title": "Trascrizione del matrimonio celebrato all'estero per cittadini italiani",
+    "kind": "pagina",
+    "file": "trascrizione-matrimonio-estero-italiani.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF160849&pagina=5",
+    "forms": []
+  },
+  {
+    "id": "trascrizione-matrimonio-estero-stranieri",
+    "title": "Trascrizione del matrimonio celebrato all'estero per cittadini stranieri residenti in Italia",
+    "kind": "pagina",
+    "file": "trascrizione-matrimonio-estero-stranieri.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF160849&pagina=6",
+    "forms": []
+  },
+  {
+    "id": "matrimonio-civile",
+    "title": "Celebrazione del matrimonio civile",
+    "kind": "pagina",
+    "file": "matrimonio-civile.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF144781&pagina=2",
+    "forms": []
+  },
+  {
+    "id": "cittadinanza",
+    "title": "Acquisizione della cittadinanza italiana",
+    "kind": "pagina",
+    "file": "cittadinanza.md",
+    "url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF1474522",
+    "forms": [
+      "modulo-figli-minori-cittadinanza",
+      "modulo-trascrizione-nascita-estero"
+    ]
+  },
+  {
+    "id": "anpr-certificati",
+    "title": "ANPR: certificati anagrafici online",
+    "kind": "pagina",
+    "file": "anpr-certificati.md",
+    "url": "https://www.anagrafenazionale.interno.it/area-cittadino/certificati/",
+    "forms": []
+  },
+  {
+    "id": "anpr-cambio-residenza",
+    "title": "ANPR: cambio di residenza online",
+    "kind": "pagina",
+    "file": "anpr-cambio-residenza.md",
+    "url": "https://www.anagrafenazionale.interno.it/area-cittadino/cambio-di-residenza/",
+    "forms": []
+  },
+  {
+    "id": "anpr-cittadini-europei",
+    "title": "ANPR: servizi per i cittadini europei",
+    "kind": "pagina",
+    "file": "anpr-cittadini-europei.md",
+    "url": "https://www.anagrafenazionale.interno.it/area-cittadino/servizi-per-cittadini-europei/",
+    "forms": []
+  },
+  {
+    "id": "anpr-autocertificazione",
+    "title": "ANPR: autocertificazione online",
+    "kind": "pagina",
+    "file": "anpr-autocertificazione.md",
+    "url": "https://www.anagrafenazionale.interno.it/area-cittadino/autocertificazione/",
+    "forms": []
+  },
+  {
+    "id": "cie-ministero-italia",
+    "title": "Ministero dell'Interno: rilascio e rinnovo della CIE in Italia",
+    "kind": "pagina",
+    "file": "cie-ministero-italia.md",
+    "url": "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-in-italia/",
+    "forms": []
+  },
+  {
+    "id": "cie-ministero-minorenni",
+    "title": "Ministero dell'Interno: CIE per i minorenni",
+    "kind": "pagina",
+    "file": "cie-ministero-minorenni.md",
+    "url": "https://www.cartaidentita.interno.gov.it/richiedi/rilascio-e-rinnovo-minorenni/",
+    "forms": [
+      "modulo-assenso-genitore-cie"
+    ]
+  },
+  {
+    "id": "cie-ministero-spedizione",
+    "title": "Ministero dell'Interno: spedizione della CIE",
+    "kind": "pagina",
+    "file": "cie-ministero-spedizione.md",
+    "url": "https://www.cartaidentita.interno.gov.it/richiedi/modalita-di-spedizione-del-documento/",
+    "forms": []
+  },
+  {
+    "id": "modulo-dichiarazione-residenza",
+    "title": "Dichiarazione di residenza (modello ministeriale)",
+    "kind": "modulo",
+    "file": "modulo-dichiarazione-residenza.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/26-Dichiarazione_di_residenza_privacy.pdf"
+  },
+  {
+    "id": "modulo-richiesta-cie",
+    "title": "Modulo di richiesta della carta d'identità",
+    "kind": "modulo",
+    "file": "modulo-richiesta-cie.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/02-Modulo_richiesta_CIE_Rev2_privacy.pdf"
+  },
+  {
+    "id": "modulo-assenso-genitore-cie",
+    "title": "Dichiarazione di assenso del genitore per la carta d'identità del minore",
+    "kind": "modulo",
+    "file": "modulo-assenso-genitore-cie.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/01-Dichiarazione_di_assenso_del_genitore_carta_di_identita_per_minore_privacy.pdf"
+  },
+  {
+    "id": "modulo-attestazione-soggiorno",
+    "title": "Richiesta di attestazione di regolarità di soggiorno (cittadini UE)",
+    "kind": "modulo",
+    "file": "modulo-attestazione-soggiorno.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/03-Richiesta_attestazione_regolarit_di_soggiorno_privacy.pdf"
+  },
+  {
+    "id": "modulo-attestazione-soggiorno-familiare",
+    "title": "Richiesta di attestazione di regolarità di soggiorno per il familiare di un cittadino UE",
+    "kind": "modulo",
+    "file": "modulo-attestazione-soggiorno-familiare.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/04-Richiesta_attestazione_regolarita_soggiorno_familiare_privacy.pdf"
+  },
+  {
+    "id": "modulo-attestazione-soggiorno-permanente",
+    "title": "Richiesta di attestazione di soggiorno permanente (cittadini UE)",
+    "kind": "modulo",
+    "file": "modulo-attestazione-soggiorno-permanente.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/05-Richiesta_attestazione_regolarita_soggiorno_permanente_cittadini_Unione_Europea_privacy.pdf"
+  },
+  {
+    "id": "modulo-ufficiale-domicilio",
+    "title": "Richiesta di ufficiale d'anagrafe a domicilio",
+    "kind": "modulo",
+    "file": "modulo-ufficiale-domicilio.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/06-Richiesta_di_ufficiale_di_anagrafe_a_domicilio_privacy.pdf"
+  },
+  {
+    "id": "modulo-autocertificazione",
+    "title": "Dichiarazione sostitutiva di certificazione (autocertificazione)",
+    "kind": "modulo",
+    "file": "modulo-autocertificazione.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/15-Dichiarazioni_sostitutive_di_certificazioni_privacy.pdf"
+  },
+  {
+    "id": "modulo-dichiarazione-notorieta",
+    "title": "Dichiarazione sostitutiva dell'atto di notorietà da presentare alla Pubblica Amministrazione",
+    "kind": "modulo",
+    "file": "modulo-dichiarazione-notorieta.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/18-DSAN_da_produrre_agli_organi_della_PA_o_ai_Gestori_di_Pubblici_Servizi_privacy.pdf"
+  },
+  {
+    "id": "modulo-cancellazione-anagrafica",
+    "title": "Richiesta di cancellazione anagrafica",
+    "kind": "modulo",
+    "file": "modulo-cancellazione-anagrafica.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/16-Cancellazione_anagrafica_privacy.pdf"
+  },
+  {
+    "id": "modulo-richiesta-certificati",
+    "title": "Modulo di richiesta dei certificati",
+    "kind": "modulo",
+    "file": "modulo-richiesta-certificati.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/Rich_Certificato_PDFA.pdf"
+  },
+  {
+    "id": "modulo-trascrizione-nascita-estero",
+    "title": "Domanda di trascrizione dell'atto di nascita formato all'estero",
+    "kind": "modulo",
+    "file": "modulo-trascrizione-nascita-estero.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/Trascrizione_attoestero_nascita_estero_privacy_20231205.pdf"
+  },
+  {
+    "id": "modulo-figli-minori-cittadinanza",
+    "title": "Dichiarazione sostitutiva per i figli minori conviventi (cittadinanza, art. 14)",
+    "kind": "modulo",
+    "file": "modulo-figli-minori-cittadinanza.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/Dichiarazione_sostitutiva_art._14__Modulo_figli_minori__privacy.pdf"
+  },
+  {
+    "id": "guida-residenza-online",
+    "title": "Guida al servizio di cambio di residenza online di Roma Capitale",
+    "kind": "guida",
+    "file": "guida-residenza-online.pdf",
+    "url": "https://www.comune.roma.it/web-resources/cms/documents/Manuale_Utente_CRI_onlineCittadino.pdf"
+  }
+]

@@ -1,0 +1,10 @@
+<div class="page welcome" (click)="start()" [attr.dir]="state.dir()" [attr.lang]="state.selectedLanguage() ?? 'it'">
+  <button type="button" class="lang-switch" (click)="openLanguage($event)"
+          [attr.aria-label]="state.t('changeLang')" [title]="state.t('changeLang')">
+    <span class="lang-switch-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+  </button>
+
+  <img class="logo" src="logo-tramite-negativo.png" alt="Tramite – Sportello digitale multilingue" />
+
+  <button type="button" class="cta">{{ tapText() }}</button>
+</div>

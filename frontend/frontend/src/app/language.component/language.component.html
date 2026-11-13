@@ -1,0 +1,31 @@
+<div class="page" [attr.dir]="state.dir()" [attr.lang]="state.selectedLanguage() ?? 'it'">
+  <header class="top-bar">
+    <button class="action-btn back-btn" (click)="back()" type="button" [attr.dir]="state.dir()">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      <span>{{ state.t('back') }}</span>
+    </button>
+  </header>
+
+  <h1 id="lang-title" class="dark-title lang-title">{{ state.t('chooseLang') }}</h1>
+
+  <div class="lang-list" role="radiogroup" aria-labelledby="lang-title">
+    @for (lang of languages; track lang.code) {
+      <button class="language-card dark-card"
+              [class.selected]="isSelected(lang.code)"
+              (click)="selectLanguage(lang)"
+              type="button"
+              role="radio"
+              [attr.lang]="lang.code"
+              [attr.dir]="dirOf(lang.code)"
+              [attr.aria-checked]="isSelected(lang.code)">
+        <span class="names">
+          <span class="native-name">{{ lang.nativeName }}</span>
+          @if (lang.translatedName) {
+            <span class="translated-name" lang="it">{{ lang.translatedName }}</span>
+          }
+        </span>
+        <span class="radio" aria-hidden="true"></span>
+      </button>
+    }
+  </div>
+</div>

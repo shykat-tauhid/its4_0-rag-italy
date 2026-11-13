@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.welcome {
+  justify-content: center;
+  gap: calc(40px * var(--ui-scale));
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  padding: calc(120px * var(--ui-scale)) 24px calc(96px * var(--ui-scale));
+  cursor: pointer;
+}
+
+/* The white logo sits straight on the dark background, as wide as the button below it. */
+.logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, calc(620px * var(--ui-scale)));
+  height: auto;
+  animation: rise 0.85s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+.cta {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(100%, calc(620px * var(--ui-scale)));
+  min-height: calc(88px * var(--ui-scale));
+  padding: 16px 28px;
+  border: 0;
+  border-radius: 20px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-primary) 85%, #ffffff), var(--c-primary));
+  color: var(--c-on-primary);
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3.4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 0 40px -6px color-mix(in srgb, var(--c-primary) 70%, transparent), 0 16px 30px -16px rgba(0, 0, 0, 0.7);
+  animation: rise 0.85s 0.1s cubic-bezier(0.2, 0.75, 0.2, 1) both, glow 2.6s 1s ease-in-out infinite;
+}
+
+:root[data-cvd="contrast"] .cta {
+  background: var(--c-primary);
+  box-shadow: none;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 40px -6px color-mix(in srgb, var(--c-primary) 70%, transparent), 0 16px 30px -16px rgba(0, 0, 0, 0.7); }
+  50% { box-shadow: 0 0 64px 0 color-mix(in srgb, var(--c-primary) 85%, transparent), 0 16px 30px -16px rgba(0, 0, 0, 0.7); }
+}

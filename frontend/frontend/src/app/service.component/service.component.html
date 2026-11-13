@@ -1,0 +1,24 @@
+<div class="page" [class.rtl]="state.isRtl()" [attr.dir]="state.dir()" [attr.lang]="state.selectedLanguage()">
+  <header class="top-bar">
+    <button class="action-btn back-btn" (click)="goBack()" type="button" [attr.dir]="state.dir()">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      <span>{{ state.t('back') }}</span>
+    </button>
+  </header>
+
+  <button type="button" class="lang-switch" (click)="goToLanguageSelection()"
+          [attr.aria-label]="state.t('changeLang')" [title]="state.t('changeLang')">
+    <span class="lang-switch-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+  </button>
+
+  <div class="options-page">
+    <h1 class="dark-title options-title services-title">{{ state.t('themePrompt') }}</h1>
+
+    <div class="options-list">
+      <button class="option-card dark-card service-card" (click)="selectService('anagrafica')" type="button">
+        <span class="option-icon" aria-hidden="true"><i class="fa-solid fa-id-card"></i></span>
+        <span class="option-text"><span class="option-title">{{ state.t('serviceAnagrafica') }}</span></span>
+      </button>
+    </div>
+  </div>
+</div>

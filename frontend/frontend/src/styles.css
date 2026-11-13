@@ -1,0 +1,436 @@
+@import "./accessibility.css";
+
+:root {
+  --font-scale: 1;
+  font-size: calc(16px * var(--font-scale));
+  --ui-scale: calc(1 + (var(--font-scale) - 1) * 0.5);
+
+  --c-bg-1: #f1f4fa;
+  --c-title-border: #d9e1ee;
+  --c-header-bg: #07142d;
+  --c-on-header: #ffffff;
+  --c-on-header-muted: #d8e3f7;
+
+  --c-hd: #07142d;
+  --c-hd-2: #0e2554;
+  --c-glow-1: #1750c8;
+  --c-glow-2: #008c45;
+  --c-glow-3: #cd212a;
+  --guilloche-opacity: 0.05;
+
+  --c-on-dark: #ffffff;
+  --c-on-dark-muted: #c3d1ea;
+  --c-dark-card: rgba(10, 27, 61, 0.62);
+  --c-dark-card-selected: rgba(23, 80, 200, 0.22);
+  --c-dark-border: rgba(140, 170, 230, 0.28);
+  --c-dark-accent: #4d8df5;
+  --c-glass-bg: rgba(255, 255, 255, 0.08);
+  --c-glass-border: rgba(255, 255, 255, 0.28);
+
+  --c-surface: #ffffff;
+  --c-surface-alt: #f1f4fa;
+  --c-soft: #e6ecf7;
+  --c-soft-hover: #dae3f3;
+
+  --c-border: #d9e1ee;
+  --c-border-hover: #b3c1d6;
+  --c-line: #e3e9f3;
+  --border-w: 1px;
+
+  --c-text: #0f1a2e;
+  --c-text-strong: #0a1b3d;
+  --c-muted: #4a5870;
+  --c-muted-2: #4a5870;
+
+  --c-primary: #1750c8;
+  --c-primary-hover: #0d379f;
+  --c-on-primary: #ffffff;
+  --c-primary-soft: #eaf0fe;
+  --c-accent-soft: #eaf0fe;
+  --c-accent: #008c45;
+  --c-focus: #ffbf47;
+  --c-focus-ring: #0b0c0c;
+
+  --flag-g: #008c45;
+  --flag-w: #f4f5f0;
+  --flag-r: #cd212a;
+  --tricolore: linear-gradient(90deg, var(--flag-g) 33.3%, var(--flag-w) 33.3% 66.6%, var(--flag-r) 66.6%);
+
+  --c-backdrop: rgba(7, 20, 45, 0.55);
+  --shadow-sm: 0 1px 2px rgba(10, 27, 61, 0.05), 0 18px 36px -22px rgba(10, 27, 61, 0.28);
+  --shadow-md: 0 1px 2px rgba(10, 27, 61, 0.06), 0 28px 48px -22px rgba(10, 27, 61, 0.38);
+  --shadow-lg: 0 40px 80px -28px rgba(7, 20, 45, 0.5), 0 4px 12px rgba(7, 20, 45, 0.08);
+  --glow: color-mix(in srgb, var(--c-primary) 38%, transparent);
+
+  --font-body: "Titillium Web", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --font-display: "Bricolage Grotesque", "Titillium Web", "Segoe UI", system-ui, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+/* Kiosk: no pinch or double-tap zoom on the touch screen (scrolling still works). */
+html {
+  touch-action: pan-x pan-y;
+}
+
+/* Kiosk: holding a finger down does not select text, open the callout menu or drag images
+   and links. Text fields stay selectable. The context menu is blocked in main.ts. */
+html {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+img,
+a {
+  -webkit-user-drag: none;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: var(--c-bg-1);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+button,
+input {
+  font-family: inherit;
+  letter-spacing: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--c-focus-ring);
+}
+
+::selection {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stripe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  height: 5px;
+  background: var(--tricolore);
+  pointer-events: none;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px 24px 104px;
+  box-sizing: border-box;
+  background: var(--c-bg-1);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.page.rtl {
+  direction: rtl;
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.page::before {
+  z-index: -2;
+  background:
+    radial-gradient(900px 520px at 50% -8%, color-mix(in srgb, var(--c-glow-1) 55%, transparent), transparent 70%),
+    radial-gradient(700px 420px at 100% 100%, color-mix(in srgb, var(--c-glow-1) 22%, transparent), transparent 72%),
+    linear-gradient(180deg, var(--c-hd-2) 0%, var(--c-hd) 100%);
+}
+
+.page::after {
+  z-index: -1;
+  background: url("/img/guilloche.svg") center / cover repeat-y;
+  opacity: var(--guilloche-opacity);
+}
+
+:root[data-cvd="contrast"] .page::before {
+  background: #000000;
+}
+
+.dark-card {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1.5px solid var(--c-dark-border);
+  border-radius: 20px;
+  background: var(--c-dark-card);
+  color: var(--c-on-dark);
+  box-shadow: 0 18px 36px -24px rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dark-card:hover {
+  border-color: var(--c-dark-accent);
+}
+
+.dark-card:active {
+  transform: scale(0.99);
+}
+
+.dark-card.selected {
+  border-color: var(--c-dark-accent);
+  background: var(--c-dark-card-selected);
+  box-shadow: 0 0 0 1px var(--c-dark-accent), 0 18px 36px -20px var(--c-dark-accent);
+}
+
+.options-page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(720px * var(--ui-scale));
+  margin-top: calc(96px * var(--ui-scale));
+}
+
+.dark-title.options-title {
+  margin-bottom: calc(56px * var(--ui-scale));
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(28px * var(--ui-scale));
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  min-height: calc(112px * var(--ui-scale));
+  padding: 20px 24px;
+  text-align: start;
+  cursor: pointer;
+  animation: rise 0.85s 0.1s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+.option-card + .option-card {
+  animation-delay: 0.18s;
+}
+
+.option-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(76px * var(--ui-scale));
+  height: calc(76px * var(--ui-scale));
+  border-radius: 18px;
+  background: linear-gradient(145deg, var(--c-primary), var(--c-primary-hover));
+  color: var(--c-on-primary);
+  font-size: 2.2rem;
+  box-shadow: 0 12px 24px -12px var(--glow);
+}
+
+.option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.option-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.option-desc {
+  font-size: 1.05rem;
+  color: var(--c-on-dark-muted);
+}
+
+.dark-title {
+  margin: 0;
+  text-align: center;
+  color: var(--c-on-dark);
+  font-size: clamp(2rem, 4.6vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  animation: rise 0.85s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+.top-bar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  direction: ltr;
+}
+
+/* The bar spans the whole width: only its buttons take touches, not the empty space
+   in between (the chat starts at the same height on wide screens). */
+.top-bar {
+  pointer-events: none;
+}
+
+.top-bar > * {
+  pointer-events: auto;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid var(--c-glass-border);
+  border-radius: 999px;
+  background: var(--c-glass-bg);
+  color: var(--c-on-dark);
+  font-weight: 600;
+  font-size: 1rem;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #ffffff;
+  color: var(--c-header-bg);
+  transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+
+.action-btn:disabled:hover {
+  background: var(--c-glass-bg);
+  color: var(--c-on-dark);
+}
+
+:root[data-cvd="contrast"] .action-btn {
+  border: 2px solid #ffffff;
+  background: #000000;
+}
+
+:root[data-cvd="contrast"] .action-btn:hover {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+@keyframes pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 22px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* Round "change language" button, on every page in line with the accessibility
+   button (same size, same distance from the edge). */
+.lang-switch {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  direction: ltr;
+  z-index: 11; /* above .top-bar, which spans the whole width */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--c-on-dark);
+  cursor: pointer;
+}
+
+.lang-switch-icon {
+  display: grid;
+  place-items: center;
+  /* Same size and edge as the accessibility button. */
+  box-sizing: border-box;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: linear-gradient(145deg, var(--c-primary), var(--c-primary-hover));
+  color: var(--c-on-primary);
+  font-size: 32px; /* in px like the accessibility button: it does not grow with the text */
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.7);
+  transition: transform 0.2s ease;
+}
+
+.lang-switch:hover .lang-switch-icon {
+  transform: scale(1.06);
+}
+
+/* In RTL languages the accessibility button moves to the left: the language
+   button follows it, and the back button takes the right side. */
+[dir="rtl"] > .lang-switch {
+  right: auto;
+  left: 24px;
+  align-items: flex-start;
+}
+
+.page[dir="rtl"] > .top-bar {
+  justify-content: flex-end;
+}
