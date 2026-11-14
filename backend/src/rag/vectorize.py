@@ -868,6 +868,14 @@ _IT_MULTILINGUAL_GLOSSARY = {
     "онлайн": ("online",),
     "бланк": ("modulo",),
     "житл": ("abitazione",),
+    "кошт": ("costo",),
+    "чека": ("tempi", "consegna"),
+    "часу": ("tempi",),
+    "термін": ("tempi",),
+    "бездомн": ("dimora", "tetto"),
+    "неповнолітн": ("minori", "minorenni"),
+    "батьк": ("genitori",),
+    "згод": ("assenso",),
     # Bengalese (radici)
     "বাসস্থান": ("residenza",),
     "বসবাস": ("residenza",),
@@ -901,6 +909,14 @@ _IT_MULTILINGUAL_GLOSSARY = {
     "অঙ্গ": ("organi", "donazione"),
     "পরিবার": ("famiglia",),
     "অনলাইন": ("online",),
+    # "স্থায়ী ঠিকানা নেই" (nessun indirizzo fisso), ma anche soggiorno permanente.
+    "স্থায়ী": ("fissa", "dimora", "permanente"),
+    "গৃহহীন": ("dimora", "tetto"),
+    "নাবালক": ("minori", "minorenni"),
+    "বাবা-মা": ("genitori",),
+    "অভিভাবক": ("genitori",),
+    "সম্মতি": ("assenso",),
+    "সময়": ("tempi",),
     # Arabo (radici, confrontate anche senza articolo "ال" e congiunzione "و")
     "إقام": ("residenza",),
     "اقام": ("residenza",),
@@ -945,6 +961,18 @@ _IT_MULTILINGUAL_GLOSSARY = {
     "عائل": ("famiglia",),
     "إنترنت": ("online",),
     "انترنت": ("online",),
+    # "الحالة المدنية" (stato civile), "زواج مدني" (matrimonio civile).
+    "مدني": ("civile",),
+    "قران": ("celebrazione", "matrimonio"),
+    # "لعقد زواج" (per celebrare un matrimonio); "عقد" da solo è anche "contratto".
+    "لعقد": ("celebrazione",),
+    "مأوى": ("dimora", "tetto"),
+    "مشرد": ("dimora", "tetto"),
+    "قاصر": ("minori", "minorenni"),
+    "والدين": ("genitori",),
+    "الوالدين": ("genitori",),
+    "موافق": ("assenso",),
+    "مدة": ("tempi",),
     # Cinese (sottostringhe, semplificato e tradizionale)
     "居住": ("residenza",),
     "户籍": ("residenza", "anagrafe"),
@@ -1023,6 +1051,23 @@ _IT_MULTILINGUAL_GLOSSARY = {
     "辦理": ("richiesta",),
     "罗马": ("roma",),
     "羅馬": ("roma",),
+    # Nascita all'estero: l'atto va trascritto, non è un'iscrizione anagrafica.
+    "国外出生": ("trascrizione", "atto"),
+    "國外出生": ("trascrizione", "atto"),
+    "海外出生": ("trascrizione", "atto"),
+    "外国出生": ("trascrizione", "atto"),
+    "外國出生": ("trascrizione", "atto"),
+    "转录": ("trascrizione",),
+    "轉錄": ("trascrizione",),
+    "未成年": ("minori", "minorenni"),
+    "父母": ("genitori",),
+    "同意": ("assenso",),
+    "无家可归": ("dimora", "tetto"),
+    "無家可歸": ("dimora", "tetto"),
+    "流浪": ("dimora", "tetto"),
+    "多长时间": ("tempi",),
+    "多長時間": ("tempi",),
+    "多久": ("tempi",),
 }
 
 _CJK_RE = re.compile(r"[一-鿿]")

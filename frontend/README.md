@@ -4,11 +4,11 @@ Digital kiosk that helps foreign residents of Rome with the regulations and form
 
 ## Repository layout
 
-| Folder | Content | Stack |
-| --- | --- | --- |
+| Folder                        | Content                           | Stack                    |
+| ----------------------------- | --------------------------------- | ------------------------ |
 | [`../backend/`](../backend/) | RAG chatbot API, PDF and printing | Python 3.13, FastAPI, uv |
-| [`frontend/`](frontend/) | Kiosk user interface | Angular 21 |
-| [`kiosk/`](kiosk/) | Launches Chrome in kiosk mode | PowerShell |
+| [`frontend/`](frontend/)     | Kiosk user interface              | Angular 21               |
+| [`kiosk/`](kiosk/)           | Launches Chrome in kiosk mode     | PowerShell               |
 
 ## Starting the totem, step by step
 
@@ -92,13 +92,13 @@ Chrome opens full screen on `http://localhost:4200/`, with a dedicated profile i
 
 ### If something does not work
 
-| Symptom | Check |
-| --- | --- |
-| The chat answers "connection error" | The backend window: the backend must be running, and Ollama reachable or the Gemini key valid. |
-| The backend stops at startup about `VALERIO_API` | `backend\.env` has neither a Gemini key nor `LOCAL_MODEL_NAME` + `LOCAL_MODEL_URL`. |
-| Empty or cut answers with Ollama | Raise `LOCAL_MODEL_CONTEXT` (e.g. `16384`). |
-| Printing fails | The printer is on, paired over Bluetooth, and its address or COM port matches `.env`. |
-| Answers take minutes | Normal on a PC without GPU running a local model. |
+| Symptom                                            | Check                                                                                          |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| The chat answers "connection error"                | The backend window: the backend must be running, and Ollama reachable or the Gemini key valid. |
+| The backend stops at startup about `VALERIO_API` | `backend\.env` has neither a Gemini key nor `LOCAL_MODEL_NAME` + `LOCAL_MODEL_URL`.      |
+| Empty or cut answers with Ollama                   | Raise `LOCAL_MODEL_CONTEXT` (e.g. `16384`).                                                |
+| Printing fails                                     | The printer is on, paired over Bluetooth, and its address or COM port matches `.env`.        |
+| Answers take minutes                               | Normal on a PC without GPU running a local model.                                              |
 
 ## Printing
 

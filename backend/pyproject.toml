@@ -19,6 +19,7 @@ dependencies = [
     "fpdf2>=2.8.9",
     "pyserial>=3.5",
     "pillow>=13.0.0",
+    "uharfbuzz>=0.57.0",
 ]
 
 [project.scripts]

@@ -88,6 +88,18 @@ def test_multilingual_glossary_matches_each_script(vectorize):
     assert terms("Come posso cambiare residenza?") == []
 
 
+def test_multilingual_glossary_covers_kiosk_test_questions(vectorize):
+    # Domande di prova del totem che senza questi termini non trovavano la pagina giusta.
+    terms = vectorize._glossary_terms
+
+    assert "tempi" in terms("Скільки коштує CIE і скільки часу чекати?")
+    assert "trascrizione" in terms("我的孩子在国外出生，怎么在意大利登记出生证明？")
+    assert {"minori", "genitori", "assenso"} <= set(terms("未成年人办理电子身份证需要父母双方同意吗？"))
+    assert {"fissa", "dimora"} <= set(terms("আমার স্থায়ী ঠিকানা নেই, আমি কি রোমে নিবন্ধন করতে পারি?"))
+    assert {"civile", "celebrazione"} <= set(terms("ما هي الوثائق اللازمة لعقد زواج مدني في روما؟"))
+    assert "civile" in terms("أين يمكنني الحصول على شهادة الحالة المدنية؟")
+
+
 def test_with_glossary_adds_only_missing_terms(vectorize):
     enriched = vectorize._with_glossary(
         "Quali documenti per sostituire la residenza?",

@@ -100,13 +100,15 @@ terminologia della Pubblica Amministrazione.
 Rispondi nella stessa lingua usata dall'utente; 
 se non è chiara, rispondi in italiano.
 Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
-prevede più sistemi di scrittura.
+prevede più sistemi di scrittura (cinese: semplificato).
 
 Usa i passaggi del contesto che rispondono direttamente alla domanda. Non
 confondere informazioni di servizi diversi o le modalità di prenotazione con
 i documenti da presentare. Cita una norma solo se il contesto collega
 chiaramente quella norma all'informazione riportata; non attribuire alla norma
-regole descritte separatamente come modalità del servizio. Non dire "sulla
+regole descritte separatamente come modalità del servizio. Se il contesto
+tratta solo argomenti vicini (es. rinnovo del permesso di soggiorno, che
+spetta alla Questura), dillo invece di adattarlo. Non dire "sulla
 base del contesto" o "nei documenti forniti"; rispondi direttamente alla
 domanda.
 """ + _COMMON_RULES
@@ -126,12 +128,14 @@ sulla normativa se nessuna norma del contesto risponde alla domanda.
 Usa frasi brevi e un linguaggio semplice. Rispondi OBBLIGATORIAMENTE nella
 stessa lingua della DOMANDA DELL'UTENTE.
 Mantieni anche il sistema di scrittura usato dall'utente, quando la lingua
-prevede più sistemi di scrittura.
+prevede più sistemi di scrittura (cinese: semplificato).
 
 Non confondere informazioni di servizi diversi o le modalità di prenotazione
 con i documenti da presentare. Cita una norma solo se il contesto collega
 chiaramente quella norma all'informazione riportata; non attribuire alla norma
 regole descritte separatamente come modalità del servizio.
+Se il contesto tratta solo argomenti vicini (es. rinnovo del permesso di
+soggiorno, che spetta alla Questura), dillo invece di adattarlo.
 Non copiare il testo italiano del contesto.
 """ + _COMMON_RULES
 
